@@ -7,6 +7,7 @@ comparision of outside and inside temperature and be visible at LCD together
 with current temperatures. It should also be possible to control the valve 
 manually, if needed. All diagnostic information will be available at local web 
 page.
+
 ## Components needed: 
 * microcontroller - ESP32 development board
 * two temperature sensors - DS18B20

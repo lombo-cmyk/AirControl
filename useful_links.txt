@@ -1,0 +1,6 @@
+https://youtu.be/QopRAwUP5ds
+https://www.dfrobot.com/blog-692.html
+https://botland.com.pl/pl/moduly-wifi/8893-esp32-wifi-bt-42-platforma-z-modulem-esp-wroom-32-zgodny-z-esp32-devkit.html
+https://circuits4you.com/2018/12/31/esp32-devkit-esp32-wroom-gpio-pinout/
+https://forum.micropython.org/viewtopic.php?t=5353
+https://randomnerdtutorials.com/micropython-ds18b20-esp32-esp8266/

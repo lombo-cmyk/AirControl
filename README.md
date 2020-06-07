@@ -17,6 +17,7 @@ page.
 * LCD screen, buttons - LCD1602 based on HD44780 with I2C converting module
 * power circuit (Power supply + at least 1 step-down converter) - depends mostly
 on servomotor
+* electricity usage monitor 12EA5gw 
 
 ## Expected problems:
 * creating www page
@@ -24,3 +25,4 @@ on servomotor
   * servo(24V DC / 230V AC), 
   * amplifier circuit (10-12V),
   * controller(3-5V) - depends on controller 
+* calculating power usage from impulses

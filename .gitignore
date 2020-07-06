@@ -1,1 +1,7 @@
 .idea
+/esp/idea
+/esp/build
+/esp/cmake-build-debug
+LICENSE
+esp32-ds18b20/
+esp32-owb

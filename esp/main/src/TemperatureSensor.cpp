@@ -7,7 +7,8 @@
 #include "freertos/task.h"
 #include "../include/Pins.h"
 #include <iostream>
-#include <exception>
+#include <string>
+
 TemperatureSensor::TemperatureSensor() {
     vTaskDelay(2000.0 / portTICK_PERIOD_MS);
     oneWireInterface = (owb_rmt_initialize(&rmt_driver_info, temperaturePin, RMT_CHANNEL_1, RMT_CHANNEL_0));
@@ -115,7 +116,7 @@ std::array<float, MAX_DEVICES> TemperatureSensor::PerformTemperatureReadOut() {
             ds18b20_wait_for_conversion(devices[0]);
             readings = ReadTemperature();
             if (IsErrorInReading()){
-                throw DEVICE_ERROR;
+                throw std::runtime_error("Sensor error");
             }
             vTaskDelayUntil(&lastWakeTime, SAMPLE_PERIOD / portTICK_PERIOD_MS);
     }

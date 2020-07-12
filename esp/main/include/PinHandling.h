@@ -8,7 +8,6 @@
 class PinHandling {
 public:
     PinHandling();
-    void Run();
     static void ChangeStateOnImpuls(void * state);
 };
 

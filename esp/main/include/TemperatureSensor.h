@@ -2,12 +2,13 @@
 // Created by lukaszk on 09.07.2020.
 //
 
-#ifndef APP_TEMPLATE_TEMPERATURESENSOR_H
-#define APP_TEMPLATE_TEMPERATURESENSOR_H
+#ifndef AIRCONTROLLER_TEMPERATURESENSOR_H
+#define AIRCONTROLLER_TEMPERATURESENSOR_H
 
 #include "owb.h"
 #include "owb_rmt.h"
 #include "ds18b20.h"
+#include "Pins.h"
 
 #include <array>
 #define MAX_DEVICES          2
@@ -60,4 +61,4 @@ private:
     //insideSensor -> 1
 };
 
-#endif //APP_TEMPLATE_TEMPERATURESENSOR_H
+#endif //AIRCONTROLLER_TEMPERATURESENSOR_H

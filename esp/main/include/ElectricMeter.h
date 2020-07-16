@@ -2,8 +2,8 @@
 // Created by lukaszk on 12.07.2020.
 //
 
-#ifndef APP_TEMPLATE_ELECTRICMETER_H
-#define APP_TEMPLATE_ELECTRICMETER_H
+#ifndef AIRCONTROLLER_ELECTRICMETER_H
+#define AIRCONTROLLER_ELECTRICMETER_H
 
 #include "Pins.h"
 #include "freertos/FreeRTOS.h"
@@ -22,4 +22,4 @@ private:
 };
 
 
-#endif //APP_TEMPLATE_ELECTRICMETER_H
+#endif //AIRCONTROLLER_ELECTRICMETER_H

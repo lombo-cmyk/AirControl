@@ -3,7 +3,7 @@
 cmake_minimum_required(VERSION 3.5)
 
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
-project(app-template)
+project(AirController)
 set(CMAKE_CXX_STANDARD 17)
 if (NOT IDF_VERSION_MAJOR)
     set(IDF_VERSION_MAJOR 3)

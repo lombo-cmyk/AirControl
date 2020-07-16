@@ -3,8 +3,8 @@
 //
 #include "driver/gpio.h"
 
-#ifndef APP_TEMPLATE_PINS_H
-#define APP_TEMPLATE_PINS_H
+#ifndef AIRCONTROLLER_PINS_H
+#define AIRCONTROLLER_PINS_H
 
 #define temperaturePin GPIO_NUM_2
 #define electricMeterPin_1 GPIO_NUM_4
@@ -15,4 +15,4 @@
 #define backwardButtonPin GPIO_NUM_26
 #define optionsButtonPin GPIO_NUM_27
 
-#endif //APP_TEMPLATE_PINS_H
+#endif //AIRCONTROLLER_PINS_H

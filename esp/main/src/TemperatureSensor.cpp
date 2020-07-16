@@ -5,7 +5,6 @@
 #include "../include/TemperatureSensor.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
-#include "../include/Pins.h"
 #include <iostream>
 #include <string>
 

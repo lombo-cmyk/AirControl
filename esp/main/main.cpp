@@ -5,6 +5,7 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "ElectricMeter.h"
+#include "LCD.h"
 #define MAX_DEVICES          2
 #define DS18B20_RESOLUTION   (DS18B20_RESOLUTION_12_BIT)
 #define SAMPLE_PERIOD        (1000)   // milliseconds
@@ -20,6 +21,7 @@ void app_main(void){
     temp.FindDevices();
     temp.InitializeDevices();
     std::array<float, MAX_DEVICES> temperature={};
+    LCD test=LCD();
     while(true){
         try{
             temperature = temp.PerformTemperatureReadOut();

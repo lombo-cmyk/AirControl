@@ -4,3 +4,9 @@
 [submodule "esp32-ds18b20"]
 	path = esp32-ds18b20
 	url = https://github.com/DavidAntliff/esp32-ds18b20
+[submodule "esp32-i2c-lcd1602"]
+	path = esp32-i2c-lcd1602
+	url = https://github.com/DavidAntliff/esp32-i2c-lcd1602
+[submodule "esp32-smbus"]
+	path = esp32-smbus
+	url = https://github.com/DavidAntliff/esp32-smbus

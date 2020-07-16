@@ -14,5 +14,8 @@
 #define forwardButtonPin GPIO_NUM_14
 #define backwardButtonPin GPIO_NUM_26
 #define optionsButtonPin GPIO_NUM_27
+#define lcdSdaPin GPIO_NUM_21
+#define lcdSclPin GPIO_NUM_22
+#define lcdMasterPin GPIO_NUM_5
 
 #endif //AIRCONTROLLER_PINS_H

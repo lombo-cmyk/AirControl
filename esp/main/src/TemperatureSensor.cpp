@@ -9,10 +9,10 @@
 #include <string>
 
 TemperatureSensor::TemperatureSensor() {
-    vTaskDelay(2000.0 / portTICK_PERIOD_MS);
-    oneWireInterface = (owb_rmt_initialize(&rmt_driver_info, temperaturePin, RMT_CHANNEL_1, RMT_CHANNEL_0));
+    vTaskDelay (2000.0/portTICK_PERIOD_MS);
+    oneWireInterface = owb_rmt_initialize(&rmtDriverInfo, TEMPERATURE_PIN, RMT_CHANNEL_1, RMT_CHANNEL_0);
     owb_use_crc(oneWireInterface, true);  // enable CRC check for ROM code
-    owb_search_first(oneWireInterface, &search_state, &found);
+    owb_search_first(oneWireInterface, &searchState, &found);
 }
 
 bool operator==(const OneWireBus_ROMCode &lhs, const OneWireBus_ROMCode &rhs) {
@@ -28,13 +28,13 @@ void TemperatureSensor::FindDevices() {
     std::cout << "Found devices:" << std::endl;
     while (found)
     {
-        std::string device = TemperatureSensor::CreateStringFromRom(search_state.rom_code);
+        std::string device = TemperatureSensor::CreateStringFromRom(searchState.rom_code);
         std::cout << NoDevices << " : " << device << std::endl;
-        if(search_state.rom_code == knownDevices[0] || search_state.rom_code == knownDevices[1]){
-//            device_rom_codes[NoDevices] = search_state.rom_code;
+        if(searchState.rom_code == knownDevices[0] || searchState.rom_code == knownDevices[1]){
+//            device_rom_codes[NoDevices] = searchState.rom_code;
             NoDevices++;
         }
-        owb_search_next(oneWireInterface, &search_state, &found);
+        owb_search_next(oneWireInterface, &searchState, &found);
         totalDevicesNo++;
     }
     if(NoDevices != totalDevicesNo){
@@ -77,8 +77,7 @@ void TemperatureSensor::Run() {
 std::string TemperatureSensor::CreateStringFromRom(OneWireBus_ROMCode device) const{
     char rom_code_s[OWB_ROM_CODE_STRING_LENGTH];
     owb_string_from_rom_code(device, rom_code_s, sizeof(rom_code_s));
-    std::string ret(rom_code_s);
-    return ret;
+    return std::string (rom_code_s);
 }
 
 bool TemperatureSensor::IsErrorInReading() {

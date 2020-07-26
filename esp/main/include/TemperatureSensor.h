@@ -8,12 +8,9 @@
 #include "owb.h"
 #include "owb_rmt.h"
 #include "ds18b20.h"
-#include "Pins.h"
-
+#include "Definitions.h"
 #include <array>
-#define MAX_DEVICES          2
-#define DS18B20_RESOLUTION   (DS18B20_RESOLUTION_12_BIT)
-#define SAMPLE_PERIOD        (1000)   // milliseconds
+
 
 class TemperatureSensor {
 public:
@@ -33,11 +30,11 @@ private:
     int NoDevices = 0;
     int totalDevicesNo = 0;
     bool found = false;
-    owb_rmt_driver_info rmt_driver_info{};
+    owb_rmt_driver_info rmtDriverInfo{};
     OneWireBus *oneWireInterface;
-    OneWireBus_SearchState search_state = {0};
+    OneWireBus_SearchState searchState = {0};
     DS18B20_ERROR errors[MAX_DEVICES] = { DS18B20_OK };
-    DS18B20_Info * devices[MAX_DEVICES] = {0};
+    DS18B20_Info *devices[MAX_DEVICES] = {0};
     OneWireBus_ROMCode outsideSensor = {{{0x28},
                                          {0x5d,
                                           0xc2,

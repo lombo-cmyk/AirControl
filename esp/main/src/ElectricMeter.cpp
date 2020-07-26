@@ -15,15 +15,15 @@ void ElectricMeter::AddPumpEnergyUsage(void* arg) {
 }
 
 void ElectricMeter::Start() {
-    gpio_set_direction(electricMeterPin_1, GPIO_MODE_INPUT);
-    gpio_set_direction(electricMeterPin_2, GPIO_MODE_INPUT);
-    gpio_set_intr_type(electricMeterPin_1, GPIO_INTR_NEGEDGE);
-    gpio_set_intr_type(electricMeterPin_2, GPIO_INTR_NEGEDGE);
+    gpio_set_direction(ELECTRIC_METER_PIN_1, GPIO_MODE_INPUT);
+    gpio_set_direction(ELECTRIC_METER_PIN_2, GPIO_MODE_INPUT);
+    gpio_set_intr_type(ELECTRIC_METER_PIN_1, GPIO_INTR_NEGEDGE);
+    gpio_set_intr_type(ELECTRIC_METER_PIN_2, GPIO_INTR_NEGEDGE);
     gpio_install_isr_service(ESP_INTR_FLAG_DEFAULT);
-    gpio_isr_handler_add(electricMeterPin_1, AddPumpEnergyUsage, nullptr);
+    gpio_isr_handler_add(ELECTRIC_METER_PIN_1, AddPumpEnergyUsage, nullptr);
 }
 
-unsigned long int ElectricMeter::GetPumpEnergyUsage() {
+uint64_t ElectricMeter::GetPumpEnergyUsage() {
     return ElectricMeterPump;
 }
 

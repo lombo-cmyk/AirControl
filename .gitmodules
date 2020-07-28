@@ -1,0 +1,12 @@
+[submodule "esp/components/esp32-ds18b20"]
+	path = esp/components/esp32-ds18b20
+	url = https://github.com/DavidAntliff/esp32-ds18b20.git
+[submodule "esp/components/esp32-i2c-lcd1602"]
+	path = esp/components/esp32-i2c-lcd1602
+	url = https://github.com/DavidAntliff/esp32-i2c-lcd1602.git
+[submodule "esp/components/esp32-owb"]
+	path = esp/components/esp32-owb
+	url = https://github.com/DavidAntliff/esp32-owb.git
+[submodule "esp/components/esp32-smbus"]
+	path = esp/components/esp32-smbus
+	url = https://github.com/DavidAntliff/esp32-smbus.git

@@ -8,7 +8,7 @@ unsigned long int ElectricMeter::ElectricMeterPump = 0;
 TickType_t ElectricMeter::lastWakePump = xTaskGetTickCount();
 
 void ElectricMeter::AddPumpEnergyUsage(void* arg) {
-    if ((xTaskGetTickCount() - lastWakePump) > 100){
+    if ((xTaskGetTickCount() - lastWakePump) > 100) {
         ElectricMeterPump++;
         lastWakePump = xTaskGetTickCount();
     }
@@ -26,6 +26,3 @@ void ElectricMeter::Start() {
 uint64_t ElectricMeter::GetPumpEnergyUsage() {
     return ElectricMeterPump;
 }
-
-
-

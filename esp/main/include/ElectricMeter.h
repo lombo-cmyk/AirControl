@@ -6,19 +6,19 @@
 #define AIRCONTROLLER_ELECTRICMETER_H
 
 #include "Definitions.h"
-#include "freertos/FreeRTOS.h"
 #include "freertos//task.h"
+#include "freertos/FreeRTOS.h"
+#include <cstdint>
 
 struct ElectricMeter {
 public:
     static void Start();
-    static uint64_t GetPumpEnergyUsage();
+    static std::uint64_t GetPumpEnergyUsage();
 
 private:
     static unsigned long int ElectricMeterPump;
     static TickType_t lastWakePump;
-    static void AddPumpEnergyUsage(void *arg);
+    static void AddPumpEnergyUsage(void* arg);
 };
 
-
-#endif //AIRCONTROLLER_ELECTRICMETER_H
+#endif // AIRCONTROLLER_ELECTRICMETER_H

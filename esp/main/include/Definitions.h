@@ -15,6 +15,6 @@
 #define ESP_INTR_FLAG_DEFAULT 0
 #define MAX_DEVICES 2
 #define DS18B20_RESOLUTION (DS18B20_RESOLUTION_12_BIT)
-#define SAMPLE_PERIOD (1000) // milliseconds
+#define SAMPLE_PERIOD 1000 // milliseconds
 
 #endif // AIRCONTROLLER_PINS_H

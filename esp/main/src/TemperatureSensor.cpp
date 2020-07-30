@@ -55,6 +55,7 @@ void TemperatureSensor::InitializeDevices() {
     }
 }
 
+// Won't be used in final version
 void TemperatureSensor::Run() {
     TickType_t lastWakeTime;
     if (NoDevices > 0) {
@@ -97,6 +98,7 @@ std::array<float, MAX_DEVICES> TemperatureSensor::ReadTemperature() {
     return readings;
 }
 
+// Won't be used in final version
 template<std::size_t index>
 void TemperatureSensor::DisplayTemperature(
     std::array<float, index> readings) const {

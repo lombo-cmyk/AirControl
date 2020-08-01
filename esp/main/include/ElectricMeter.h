@@ -5,21 +5,20 @@
 #ifndef AIRCONTROLLER_ELECTRICMETER_H
 #define AIRCONTROLLER_ELECTRICMETER_H
 
-#include "Pins.h"
+#include "Definitions.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos//task.h"
-#define ESP_INTR_FLAG_DEFAULT 0
+#include <cstdint>
 
 struct ElectricMeter {
 public:
     static void Start();
-    static unsigned long int GetPumpEnergyUsage();
+    static std::uint64_t GetPumpEnergyUsage();
 
 private:
-    static unsigned long int ElectricMeterPump;
-    static TickType_t lastWakePump;
-    static void AddPumpEnergyUsage(void *arg);
+    static unsigned long int _ElectricMeterPump;
+    static TickType_t _lastWakePump;
+    static void AddPumpEnergyUsage(void* arg);
 };
 
-
-#endif //AIRCONTROLLER_ELECTRICMETER_H
+#endif // AIRCONTROLLER_ELECTRICMETER_H

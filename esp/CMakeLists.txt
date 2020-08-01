@@ -5,6 +5,9 @@ cmake_minimum_required(VERSION 3.5)
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
 project(AirController)
 set(CMAKE_CXX_STANDARD 17)
+
+# https://github.com/espressif/esp-idf/issues/5074
+# Non backwards compatible changes were mede while updating from 3.0 to 4.0 Cmake resulting in workaround below
 if (NOT IDF_VERSION_MAJOR)
     set(IDF_VERSION_MAJOR 3)
 endif()

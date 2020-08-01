@@ -4,13 +4,13 @@
 
 #include "../include/ElectricMeter.h"
 
-unsigned long int ElectricMeter::ElectricMeterPump = 0;
-TickType_t ElectricMeter::lastWakePump = xTaskGetTickCount();
+unsigned long int ElectricMeter::_ElectricMeterPump = 0;
+TickType_t ElectricMeter::_lastWakePump = xTaskGetTickCount();
 
 void ElectricMeter::AddPumpEnergyUsage(void* arg) {
-    if ((xTaskGetTickCount() - lastWakePump) > 100) {
-        ElectricMeterPump++;
-        lastWakePump = xTaskGetTickCount();
+    if ((xTaskGetTickCount() - _lastWakePump) > 100) {
+        _ElectricMeterPump++;
+        _lastWakePump = xTaskGetTickCount();
     }
 }
 
@@ -24,5 +24,5 @@ void ElectricMeter::Start() {
 }
 
 uint64_t ElectricMeter::GetPumpEnergyUsage() {
-    return ElectricMeterPump;
+    return _ElectricMeterPump;
 }

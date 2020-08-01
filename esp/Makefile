@@ -3,5 +3,7 @@
 # project subdirectory.
 #
 
+PROJECT_NAME := AirController
+
 include $(IDF_PATH)/make/project.mk
 

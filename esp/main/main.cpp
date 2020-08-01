@@ -24,6 +24,7 @@ void app_main(void) {
         for (auto const& t : temperature) {
             std::cout << "Temp is: " << t << " C" << std::endl;
         }
+        test.displayTemperature(temperature[0], temperature[1]);
         std::cout << "kWh Pump: " << ElectricMeter::GetPumpEnergyUsage()
                   << std::endl;
 

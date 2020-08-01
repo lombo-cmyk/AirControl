@@ -1,24 +1,30 @@
-#include <stdio.h>
+#include "ElectricMeter.h"
 #include "driver/gpio.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#include "include/TemperatureSensor.h"
 #include <iostream>
-#include "include/PinHandling.h"
-//#include "../../esp32-ds18b20/include/ds18b20.h"
-#define MAX_DEVICES          (8)
-#define DS18B20_RESOLUTION   (DS18B20_RESOLUTION_12_BIT)
-#define SAMPLE_PERIOD        (1000)   // milliseconds
-#define ESP_INTR_FLAG_DEFAULT 0
-extern "C"{
-    void app_main();
+#include <memory>
+
+extern "C" {
+void app_main();
 }
 
-void app_main(void)
-{
-    std::cout << "Dupa" << std::endl;
-    PinHandling controllerRoutine=PinHandling();
-    gpio_install_isr_service(ESP_INTR_FLAG_DEFAULT);
-    uint32_t state=1;
-    void* arg=&state;
-    gpio_isr_handler_add(GPIO_NUM_23, PinHandling::ChangeStateOnImpuls, arg);
-    controllerRoutine.Run();
-}
+void app_main(void) {
+    std::cout << "Esp starting" << std::endl;
+    TemperatureSensor temp = TemperatureSensor();
+    ElectricMeter::Start();
+    temp.FindDevices();
+    temp.InitializeDevices();
+    std::array<float, MAX_DEVICES> temperature = {};
+    for (;;) {
+        temperature = temp.PerformTemperatureReadOut();
+        for (auto const& t : temperature) {
+            std::cout << "Temp is: " << t << " C" << std::endl;
+        }
+        std::cout << "kWh Pump: " << ElectricMeter::GetPumpEnergyUsage()
+                  << std::endl;
 
+        vTaskDelay(2000.0 / portTICK_PERIOD_MS);
+    }
+}

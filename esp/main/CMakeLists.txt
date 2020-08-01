@@ -2,6 +2,7 @@
 set(COMPONENT_REQUIRES )
 set(COMPONENT_PRIV_REQUIRES )
 
-set(COMPONENT_SRCS "main.cpp" "src/PinHandling.cpp")
-set(COMPONENT_ADD_INCLUDEDIRS  "include/")
+set(COMPONENT_SRCS "main.cpp" "src/TemperatureSensor.cpp" "src/ElectricMeter.cpp")
+set(COMPONENT_ADD_INCLUDEDIRS  "include/." ".")
+
 register_component()

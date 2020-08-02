@@ -27,7 +27,6 @@ void app_main(void) {
         test.displayTemperature(temperature[0], temperature[1]);
         std::cout << "kWh Pump: " << ElectricMeter::GetPumpEnergyUsage()
                   << std::endl;
-
         vTaskDelay(2000.0 / portTICK_PERIOD_MS);
     }
 }

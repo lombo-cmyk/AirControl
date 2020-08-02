@@ -30,6 +30,7 @@ void TemperatureSensor::FindDevices() {
             //            device_rom_codes[_noDevices] = _searchState.rom_code;
             _noDevices++;
         }
+
         owb_search_next(_oneWireInterface, &_searchState, &found);
         _totalDevicesNo++;
     }
@@ -37,6 +38,7 @@ void TemperatureSensor::FindDevices() {
         std::cout << "Unwanted devices detected!!! Total NoDevices: "
                   << _totalDevicesNo << std::endl;
     }
+
     std::cout << "Found " << _noDevices << "device"
               << (_noDevices == 1 ? "" : "s") << std::endl;
     if (_noDevices != 2)
@@ -111,6 +113,8 @@ void TemperatureSensor::DisplayTemperature(
 }
 
 std::array<float, MAX_DEVICES> TemperatureSensor::PerformTemperatureReadOut() {
+    /*readings[0] -> outside temperature
+     *readings[1] -> inside temperature*/
     TickType_t lastWakeTime;
     std::array<float, MAX_DEVICES> readings{};
     if (_noDevices > 0) {

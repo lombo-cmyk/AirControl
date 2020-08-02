@@ -17,15 +17,17 @@ void app_main(void) {
     ElectricMeter::Start();
     temp.FindDevices();
     temp.InitializeDevices();
-    LCD test = LCD();
+    LCD LCDisplay = LCD();
     std::array<float, MAX_DEVICES> temperature = {};
     for (;;) {
         temperature = temp.PerformTemperatureReadOut();
         for (auto const& t : temperature) {
             std::cout << "Temp is: " << t << " C" << std::endl;
         }
-        test.displayTemperature(temperature[0], temperature[1]);
+        LCDisplay.displayScreen(temperature);
         std::cout << "kWh Pump: " << ElectricMeter::GetPumpEnergyUsage()
+                  << std::endl;
+        std::cout << "LCD State: " << ElectricMeter::GetDisplayState()
                   << std::endl;
         vTaskDelay(2000.0 / portTICK_PERIOD_MS);
     }

@@ -8,6 +8,7 @@
 #include "freertos/task.h"
 #include <iostream>
 #include <string>
+#include <mutex>
 
 TemperatureSensor::TemperatureSensor() {
     vTaskDelay(2000.0 / portTICK_PERIOD_MS);
@@ -83,7 +84,7 @@ TemperatureSensor::CreateStringFromRom(OneWireBus_ROMCode device) const {
     return std::string(rom_code_s);
 }
 
-bool TemperatureSensor::IsErrorInReading() {
+bool TemperatureSensor::IsErrorInReading() const {
     for (const auto err : errors) {
         if (err != DS18B20_OK) {
             return true;
@@ -115,13 +116,17 @@ void TemperatureSensor::DisplayTemperature(
 std::array<float, MAX_DEVICES> TemperatureSensor::PerformTemperatureReadOut() {
     /*readings[0] -> outside temperature
      *readings[1] -> inside temperature*/
+    std::mutex myMutex;
     TickType_t lastWakeTime;
     std::array<float, MAX_DEVICES> readings{};
     if (_noDevices > 0) {
         lastWakeTime = xTaskGetTickCount();
-        ds18b20_convert_all(_oneWireInterface);
-        ds18b20_wait_for_conversion(devices[0]);
-        readings = ReadTemperature();
+        {
+            const std::lock_guard<std::mutex> lock(myMutex);
+            ds18b20_convert_all(_oneWireInterface);
+            ds18b20_wait_for_conversion(devices[0]);
+            readings = ReadTemperature();
+        }
         if (IsErrorInReading()) {
             throw std::runtime_error("Sensor error");
         }

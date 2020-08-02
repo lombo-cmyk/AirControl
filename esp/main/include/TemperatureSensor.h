@@ -23,7 +23,7 @@ public:
 
 private:
     std::string CreateStringFromRom(OneWireBus_ROMCode device) const;
-    bool IsErrorInReading();
+    bool IsErrorInReading() const;
     std::array<float, MAX_DEVICES> ReadTemperature();
     template<unsigned int T>
     void DisplayTemperature(std::array<float, T> reading) const;

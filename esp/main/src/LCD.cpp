@@ -11,7 +11,7 @@
 #include <iomanip>
 #include <sstream>
 #include <iostream>
-
+#include "ElectricMeter.h"
 LCD::LCD() {
     connectionConfiguration.mode = I2C_MODE_MASTER;
     connectionConfiguration.sda_io_num = LCD_SDA_PIN;
@@ -65,10 +65,14 @@ std::string LCD::convertFloatToString(float number,
     return stringStream.str();
 }
 
-void LCD::displayTemperature(float temp1, float temp2) const {
+void LCD::displayTemperature(const float& outsideTemp,
+                             const float& insideTemp) const {
     std::uint8_t precision = 1;
-    std::string row0 = "Temp zewn: " + convertFloatToString(temp1, precision);
-    std::string row1 = "Temp wewn: " + convertFloatToString(temp2, precision);
+    i2c_lcd1602_clear(lcd_info);
+    std::string row0 = "Temp zewn: " +
+                       convertFloatToString(outsideTemp, precision);
+    std::string row1 = "Temp wewn: " +
+                       convertFloatToString(insideTemp, precision);
     try {
         displayLine(row0, 0);
         displayLine(row1, 1);
@@ -92,4 +96,42 @@ uint8_t LCD::_wait_for_user(void) {
     vTaskDelay(1000 / portTICK_RATE_MS);
 #endif
     return c;
+}
+
+void LCD::displayScreen(std::array<float, MAX_DEVICES>& temp) {
+    switch (ElectricMeter::GetDisplayState()) {
+    case 0:
+        LCD::displayTime();
+        break;
+    case 1:
+        LCD::displayTemperature(temp[0], temp[1]);
+        break;
+    case 2:
+        LCD::displayEnergyUsage(ElectricMeter::GetPumpEnergyUsage());
+        break;
+    case 3:
+        LCD::blank();
+        break;
+    default:
+        break;
+    }
+}
+
+void LCD::displayEnergyUsage(unsigned long int energy) const {
+    i2c_lcd1602_clear(lcd_info);
+    std::string s2 = "Energy usage:" + std::to_string(energy);
+    LCD::displayLine(s2, 0);
+}
+
+void LCD::displayTime() const {
+    i2c_lcd1602_clear(lcd_info);
+    std::string s1 = "Time here 1";
+    std::string s2 = "Time here 2";
+    LCD::displayLine(s1, 0);
+    LCD::displayLine(s2, 1);
+}
+
+void LCD::blank() const {
+    i2c_lcd1602_clear(lcd_info);
+    LCD::displayLine("blank line", 0);
 }

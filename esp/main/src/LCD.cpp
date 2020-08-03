@@ -12,70 +12,148 @@
 #include <sstream>
 #include <iostream>
 #include "ElectricMeter.h"
+#include <cmath>
+
 LCD::LCD() {
-    connectionConfiguration.mode = I2C_MODE_MASTER;
-    connectionConfiguration.sda_io_num = LCD_SDA_PIN;
-    connectionConfiguration.scl_io_num = LCD_SCL_PIN;
-    connectionConfiguration.sda_pullup_en = GPIO_PULLUP_ENABLE;
-    connectionConfiguration.scl_pullup_en = GPIO_PULLUP_ENABLE;
-    connectionConfiguration.master.clk_speed = 100000;
-    i2c_param_config(I2C_NUM_0, &connectionConfiguration);
-    i2c_driver_install(I2C_NUM_0, connectionConfiguration.mode, 0, 0, 0);
-    i2c_cmd_handle_t cmd = i2c_cmd_link_create();
+    InitializeConnectionConfiguration();
     i2c_port_t i2c_num = I2C_NUM_0;
     uint8_t address = 0x27;
-    smbus_info_t* smbus_info = smbus_malloc();
+    auto smbus_info = new smbus_info_t;
     ESP_ERROR_CHECK(smbus_init(smbus_info, i2c_num, address));
     ESP_ERROR_CHECK(smbus_set_timeout(smbus_info, 1000 / portTICK_RATE_MS));
-    ESP_ERROR_CHECK(i2c_lcd1602_init(lcd_info, smbus_info, true, 2, 32, 16));
+    ESP_ERROR_CHECK(
+        i2c_lcd1602_init(LcdInfo_, smbus_info, true, 2, 32, LCD_COLUMNS));
 
-    ESP_ERROR_CHECK(i2c_lcd1602_reset(lcd_info));
-    ESP_ERROR_CHECK(i2c_lcd1602_reset(lcd_info));
-    _wait_for_user();
-    i2c_lcd1602_set_backlight(lcd_info, true);
-    _wait_for_user();
-    std::string message = "Short message";
-    uint8_t pos = 0;
-    for (const char& letter : message) {
-        i2c_lcd1602_move_cursor(lcd_info, pos++, 0);
-        i2c_lcd1602_write_char(lcd_info, letter);
-    }
+    ESP_ERROR_CHECK(i2c_lcd1602_reset(LcdInfo_));
+    i2c_lcd1602_set_backlight(LcdInfo_, isBacklight_);
+    DisplayWelcomeMessage();
 }
 
-void LCD::displayLine(const std::string& line, std::uint8_t row) const {
+void LCD::InitializeConnectionConfiguration() {
+    connectionConfiguration_.mode = I2C_MODE_MASTER;
+    connectionConfiguration_.sda_io_num = LCD_SDA_PIN;
+    connectionConfiguration_.scl_io_num = LCD_SCL_PIN;
+    connectionConfiguration_.sda_pullup_en = GPIO_PULLUP_ENABLE;
+    connectionConfiguration_.scl_pullup_en = GPIO_PULLUP_ENABLE;
+    connectionConfiguration_.master.clk_speed = 100000;
+    i2c_param_config(I2C_NUM_0, &connectionConfiguration_);
+    i2c_driver_install(I2C_NUM_0, connectionConfiguration_.mode, 0, 0, 0);
+}
+
+void LCD::AdjustLine(std::string& line) {
+    std::string buf;
+    buf.reserve(16);
+    std::size_t charsToInsert = LCD_COLUMNS - line.length();
+    std::size_t startingChars = std::floor(charsToInsert / 2);
+    std::size_t endingChars = charsToInsert - startingChars;
+    buf.insert(0, startingChars, ' ');
+    buf.insert(startingChars, line);
+    buf.insert(std::end(buf), endingChars, ' ');
+    line = buf;
+}
+
+void LCD::DisplayLine(std::string& line, std::uint8_t row) const {
     std::uint8_t pos = 0;
     if (line.length() > 16) {
         std::string lcd_err = "Line too long!";
-        for (const char& letter : lcd_err) {
-            i2c_lcd1602_move_cursor(lcd_info, pos++, row);
-            i2c_lcd1602_write_char(lcd_info, letter);
-        }
+        i2c_lcd1602_clear(LcdInfo_);
+        DisplayLine(lcd_err, 0);
         throw std::invalid_argument("Line too long!");
     }
+    AdjustLine(line);
     for (const char& letter : line) {
-        i2c_lcd1602_move_cursor(lcd_info, pos++, row);
-        i2c_lcd1602_write_char(lcd_info, letter);
+        i2c_lcd1602_move_cursor(LcdInfo_, pos++, row);
+        i2c_lcd1602_write_char(LcdInfo_, letter);
     }
 }
+void LCD::DisplayTwoLines(std::string& line_1, std::string& line_2) const {
+    DisplayLine(line_1, 0);
+    DisplayLine(line_2, 1);
+}
 
-std::string LCD::convertFloatToString(float number,
-                                      std::uint8_t precision) const {
+template<typename T>
+std::string LCD::ConvertNumberToString(T number,
+                                       std::uint8_t precision) const {
     std::stringstream stringStream;
     stringStream << std::fixed << std::setprecision(precision) << number;
     return stringStream.str();
 }
 
-void LCD::displayTemperature(const float& outsideTemp,
+void LCD::DisplayTime() const {
+    /*Network synchronized time will be displayed here*/
+    std::string s1 = "Time here 1";
+    std::string s2 = "Time here 2";
+    try {
+        LCD::DisplayTwoLines(s1, s2);
+    } catch (const std::invalid_argument& e) {
+        std::cout << "Lcd exception thrown: " << e.what() << std::endl;
+    }
+}
+
+void LCD::DisplayTemperature(const float& outsideTemp,
                              const float& insideTemp) const {
     std::uint8_t precision = 1;
-    i2c_lcd1602_clear(lcd_info);
-    std::string row0 = "Temp zewn: " +
-                       convertFloatToString(outsideTemp, precision);
-    std::string row1 = "Temp wewn: " +
-                       convertFloatToString(insideTemp, precision);
+    std::string firstLine = "Temp zewn: " +
+                            ConvertNumberToString(outsideTemp, precision);
+    std::string secondLine = "Temp wewn: " +
+                             ConvertNumberToString(insideTemp, precision);
     try {
-        displayLine(row0, 0);
-        displayLine(row1, 1);
+        DisplayTwoLines(firstLine, secondLine);
+    } catch (const std::invalid_argument& e) {
+        std::cout << "Lcd exception thrown: " << e.what() << std::endl;
+    }
+}
+
+void LCD::DisplayEnergyUsage(const std::uint64_t& impulses) const {
+    const std::size_t impulsesPerKwh = 6400;
+    double usedEnergy = static_cast<double>(impulses) / impulsesPerKwh;
+    std::string s1 = "Energy usage:";
+    std::string s2 = ConvertNumberToString(usedEnergy, 3) + " kWh";
+    try {
+        LCD::DisplayTwoLines(s1, s2);
+    } catch (const std::invalid_argument& e) {
+        std::cout << "Lcd exception thrown: " << e.what() << std::endl;
+    }
+}
+
+void LCD::Blank() const {
+    /*State of Air control will be displayed here. This screen will also allow
+     * user to override default valve state*/
+    std::string line_1 = "blank line_1";
+    std::string line_2 = "blank line_2";
+    try {
+        LCD::DisplayTwoLines(line_1, line_2);
+    } catch (const std::invalid_argument& e) {
+        std::cout << "Lcd exception thrown: " << e.what() << std::endl;
+    }
+}
+
+void LCD::DisplayScreen(std::array<float, MAX_DEVICES>& temp) {
+    std::uint16_t displayState = ElectricMeter::GetDisplayState();
+    Setbacklight(displayState);
+    switch (displayState) {
+    case 0:
+        LCD::DisplayTime();
+        break;
+    case 1:
+        LCD::DisplayTemperature(temp[0], temp[1]);
+        break;
+    case 2:
+        LCD::DisplayEnergyUsage(ElectricMeter::GetPumpEnergyUsage());
+        break;
+    case 3:
+        LCD::Blank();
+        break;
+    default:
+        break;
+    }
+}
+
+void LCD::DisplayWelcomeMessage() const {
+    std::string welcomeMessage1 = "Welcome to";
+    std::string welcomeMessage2 = "AirControl v1";
+    try {
+        DisplayTwoLines(welcomeMessage1, welcomeMessage2);
     } catch (const std::invalid_argument& e) {
         std::cout << "Lcd exception thrown: " << e.what() << std::endl;
     }
@@ -98,40 +176,20 @@ uint8_t LCD::_wait_for_user(void) {
     return c;
 }
 
-void LCD::displayScreen(std::array<float, MAX_DEVICES>& temp) {
-    switch (ElectricMeter::GetDisplayState()) {
-    case 0:
-        LCD::displayTime();
-        break;
-    case 1:
-        LCD::displayTemperature(temp[0], temp[1]);
-        break;
-    case 2:
-        LCD::displayEnergyUsage(ElectricMeter::GetPumpEnergyUsage());
-        break;
-    case 3:
-        LCD::blank();
-        break;
-    default:
-        break;
+void LCD::Setbacklight(const std::uint16_t& displayState) {
+    uint64_t tenSeconds = 10000000;
+    if (displayState == 0 && ElectricMeter::GetLcdBacklight()) {
+        i2c_lcd1602_set_backlight(LcdInfo_, true);
+        backlightTimer_ = esp_timer_get_time();
+        ElectricMeter::SetBacklightFromLcd() = false;
     }
-}
-
-void LCD::displayEnergyUsage(unsigned long int energy) const {
-    i2c_lcd1602_clear(lcd_info);
-    std::string s2 = "Energy usage:" + std::to_string(energy);
-    LCD::displayLine(s2, 0);
-}
-
-void LCD::displayTime() const {
-    i2c_lcd1602_clear(lcd_info);
-    std::string s1 = "Time here 1";
-    std::string s2 = "Time here 2";
-    LCD::displayLine(s1, 0);
-    LCD::displayLine(s2, 1);
-}
-
-void LCD::blank() const {
-    i2c_lcd1602_clear(lcd_info);
-    LCD::displayLine("blank line", 0);
+    esp_timer_get_time();
+    if (displayState == 0 &&
+        (esp_timer_get_time() - backlightTimer_) > tenSeconds) {
+        i2c_lcd1602_set_backlight(LcdInfo_, false);
+    }
+    if (displayState != 0) {
+        backlightTimer_ = esp_timer_get_time();
+        i2c_lcd1602_set_backlight(LcdInfo_, true);
+    }
 }

@@ -12,47 +12,47 @@
 
 TemperatureSensor::TemperatureSensor() {
     vTaskDelay(2000.0 / portTICK_PERIOD_MS);
-    _oneWireInterface = owb_rmt_initialize(&_rmtDriverInfo,
+    oneWireInterface_ = owb_rmt_initialize(&rmtDriverInfo_,
                                            TEMPERATURE_PIN,
                                            RMT_CHANNEL_1,
                                            RMT_CHANNEL_0);
-    owb_use_crc(_oneWireInterface, true); // enable CRC check for ROM code
-    owb_search_first(_oneWireInterface, &_searchState, &found);
+    owb_use_crc(oneWireInterface_, true); // enable CRC check for ROM code
+    owb_search_first(oneWireInterface_, &searchState_, &found_);
 }
 
 void TemperatureSensor::FindDevices() {
     std::cout << "Found devices:" << std::endl;
-    while (found) {
+    while (found_) {
         std::string device = TemperatureSensor::CreateStringFromRom(
-            _searchState.rom_code);
-        std::cout << _noDevices << " : " << device << std::endl;
-        if (_searchState.rom_code == _knownDevices[0] ||
-            _searchState.rom_code == _knownDevices[1]) {
-            //            device_rom_codes[_noDevices] = _searchState.rom_code;
-            _noDevices++;
+            searchState_.rom_code);
+        std::cout << noDevices_ << " : " << device << std::endl;
+        if (searchState_.rom_code == knownDevices_[0] ||
+            searchState_.rom_code == knownDevices_[1]) {
+            //            device_rom_codes[noDevices_] = searchState_.rom_code;
+            noDevices_++;
         }
 
-        owb_search_next(_oneWireInterface, &_searchState, &found);
-        _totalDevicesNo++;
+        owb_search_next(oneWireInterface_, &searchState_, &found_);
+        totalDevicesNo_++;
     }
-    if (_noDevices != _totalDevicesNo) {
+    if (noDevices_ != totalDevicesNo_) {
         std::cout << "Unwanted devices detected!!! Total NoDevices: "
-                  << _totalDevicesNo << std::endl;
+                  << totalDevicesNo_ << std::endl;
     }
 
-    std::cout << "Found " << _noDevices << "device"
-              << (_noDevices == 1 ? "" : "s") << std::endl;
-    if (_noDevices != 2)
+    std::cout << "Found " << noDevices_ << "device"
+              << (noDevices_ == 1 ? "" : "s") << std::endl;
+    if (noDevices_ != 2)
         esp_restart();
 }
 
 void TemperatureSensor::InitializeDevices() {
-    for (int i = 0; i < _noDevices; i++) {
+    for (int i = 0; i < noDevices_; i++) {
         auto ds18b20_info = new DS18B20_Info;
-        devices[i] = ds18b20_info;
+        devices_[i] = ds18b20_info;
         ds18b20_init(ds18b20_info,
-                     _oneWireInterface,
-                     _knownDevices[i]); // associate with bus and device
+                     oneWireInterface_,
+                     knownDevices_[i]); // associate with bus and device
         ds18b20_use_crc(ds18b20_info, true); // enable CRC check on all reads
         ds18b20_set_resolution(ds18b20_info, DS18B20_USED_RESOLUTION);
     }
@@ -61,11 +61,11 @@ void TemperatureSensor::InitializeDevices() {
 // Won't be used in final version
 void TemperatureSensor::Run() {
     TickType_t lastWakeTime;
-    if (_noDevices > 0) {
+    if (noDevices_ > 0) {
         while (true) {
             lastWakeTime = xTaskGetTickCount();
-            ds18b20_convert_all(_oneWireInterface);
-            ds18b20_wait_for_conversion(devices[0]);
+            ds18b20_convert_all(oneWireInterface_);
+            ds18b20_wait_for_conversion(devices_[0]);
             auto readings = ReadTemperature();
             if (IsErrorInReading()) {
                 break;
@@ -85,7 +85,7 @@ TemperatureSensor::CreateStringFromRom(OneWireBus_ROMCode device) const {
 }
 
 bool TemperatureSensor::IsErrorInReading() const {
-    for (const auto err : errors) {
+    for (const auto err : errors_) {
         if (err != DS18B20_OK) {
             return true;
         }
@@ -95,8 +95,8 @@ bool TemperatureSensor::IsErrorInReading() const {
 
 std::array<float, MAX_DEVICES> TemperatureSensor::ReadTemperature() {
     std::array<float, MAX_DEVICES> readings{};
-    for (int i = 0; i < _noDevices; ++i) {
-        errors[i] = ds18b20_read_temp(devices[i], &readings[i]);
+    for (int i = 0; i < noDevices_; ++i) {
+        errors_[i] = ds18b20_read_temp(devices_[i], &readings[i]);
     }
     return readings;
 }
@@ -105,10 +105,10 @@ std::array<float, MAX_DEVICES> TemperatureSensor::ReadTemperature() {
 template<std::size_t index>
 void TemperatureSensor::DisplayTemperature(
     std::array<float, index> readings) const {
-    for (int i = 0; i < _noDevices; ++i) {
+    for (int i = 0; i < noDevices_; ++i) {
         std::cout << "Temperature readings for "
                   << TemperatureSensor::CreateStringFromRom(
-                         devices[i]->rom_code)
+                         devices_[i]->rom_code)
                   << " : " << readings[i]++ << std::endl;
     }
 }
@@ -119,12 +119,12 @@ std::array<float, MAX_DEVICES> TemperatureSensor::PerformTemperatureReadOut() {
     std::mutex myMutex;
     TickType_t lastWakeTime;
     std::array<float, MAX_DEVICES> readings{};
-    if (_noDevices > 0) {
+    if (noDevices_ > 0) {
         lastWakeTime = xTaskGetTickCount();
         {
             const std::lock_guard<std::mutex> lock(myMutex);
-            ds18b20_convert_all(_oneWireInterface);
-            ds18b20_wait_for_conversion(devices[0]);
+            ds18b20_convert_all(oneWireInterface_);
+            ds18b20_wait_for_conversion(devices_[0]);
             readings = ReadTemperature();
         }
         if (IsErrorInReading()) {

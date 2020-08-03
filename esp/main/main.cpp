@@ -24,7 +24,7 @@ void app_main(void) {
         for (auto const& t : temperature) {
             std::cout << "Temp is: " << t << " C" << std::endl;
         }
-        LCDisplay.displayScreen(temperature);
+        LCDisplay.DisplayScreen(temperature);
         std::cout << "kWh Pump: " << ElectricMeter::GetPumpEnergyUsage()
                   << std::endl;
         std::cout << "LCD State: " << ElectricMeter::GetDisplayState()

@@ -15,14 +15,23 @@ public:
     static void Start();
     static std::uint64_t GetPumpEnergyUsage();
     static std::uint16_t GetDisplayState();
+    static auto SetBacklightFromLcd() -> bool& {
+        return lcdBacklight_;
+    }
+    static auto GetLcdBacklight() -> const bool& {
+        return lcdBacklight_;
+    }
 
 private:
-    static unsigned long int _ElectricMeterPump;
-    static std::uint16_t _displayState;
-    static TickType_t _lastWakeTimePump;
-    static TickType_t _lastWakeTimeForwardButton;
+    static std::uint64_t ElectricMeterPump_;
+    static std::uint16_t displayState_;
+    static bool lcdBacklight_;
+    static TickType_t lastWakeTimePump_;
+    static TickType_t lastWakeTimeForwardButton_;
+
     static void AddPumpEnergyUsage(void* arg);
     static void DisplayNextState(void* arg);
+    static void SetLcdBacklight(void* arg);
 };
 
 #endif // AIRCONTROLLER_ELECTRICMETER_H

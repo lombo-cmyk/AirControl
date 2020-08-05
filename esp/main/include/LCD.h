@@ -34,6 +34,9 @@ private:
     void Blank() const;
     void DisplayWelcomeMessage() const;
     void Setbacklight(const std::uint16_t& displayState);
+    std::string ProcessTime(const tm& t) const;
+    std::string ProcessDate(const tm& t) const;
+    std::tuple<std::string, std::string> GetDateTime() const;
     static uint8_t _wait_for_user(void);
 };
 

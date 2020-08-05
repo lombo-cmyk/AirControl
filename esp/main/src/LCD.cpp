@@ -13,7 +13,7 @@
 #include <iostream>
 #include "ElectricMeter.h"
 #include <cmath>
-
+#include <chrono>
 LCD::LCD() {
     InitializeConnectionConfiguration();
     i2c_port_t i2c_num = I2C_NUM_0;
@@ -80,11 +80,10 @@ std::string LCD::ConvertNumberToString(T number,
 }
 
 void LCD::DisplayTime() const {
-    /*Network synchronized time will be displayed here*/
-    std::string s1 = "Time here 1";
-    std::string s2 = "Time here 2";
+    /*Network synchronized time is displayed here*/
+    auto dateTime = GetDateTime();
     try {
-        LCD::DisplayTwoLines(s1, s2);
+        LCD::DisplayTwoLines(std::get<0>(dateTime), std::get<1>(dateTime));
     } catch (const std::invalid_argument& e) {
         std::cout << "Lcd exception thrown: " << e.what() << std::endl;
     }
@@ -192,4 +191,27 @@ void LCD::Setbacklight(const std::uint16_t& displayState) {
         backlightTimer_ = esp_timer_get_time();
         i2c_lcd1602_set_backlight(LcdInfo_, true);
     }
+}
+
+std::string LCD::ProcessTime(const tm& t) const {
+    std::stringstream buffer;
+    buffer << std::setfill('0') << std::setw(2) << t.tm_hour << ":"
+           << std::setfill('0') << std::setw(2) << t.tm_min << ":"
+           << std::setfill('0') << std::setw(2) << t.tm_sec;
+    return buffer.str();
+}
+
+std::string LCD::ProcessDate(const tm& t) const {
+    std::stringstream buffer;
+    buffer << std::setfill('0') << std::setw(2) << t.tm_mday << "."
+           << std::setfill('0') << std::setw(2) << t.tm_mon + 1 << "."
+           << t.tm_year + 1900;
+    return buffer.str();
+}
+
+std::tuple<std::string, std::string> LCD::GetDateTime() const {
+    auto timeNow = std::chrono::system_clock::now();
+    time_t tt = std::chrono::system_clock::to_time_t(timeNow);
+    tm local_tm = *localtime(&tt);
+    return {ProcessDate(local_tm), ProcessTime(local_tm)};
 }

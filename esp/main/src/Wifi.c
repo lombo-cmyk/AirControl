@@ -193,7 +193,7 @@ static void obtain_time(void) {
     localtime_r(&now, &timeinfo);
 }
 
-void aaa() {
+void InitializeWifiConnection() {
     StartWifiConn();
     time_t now;
     struct tm timeinfo;

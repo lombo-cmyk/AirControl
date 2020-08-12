@@ -11,9 +11,10 @@
 #include <iomanip>
 #include <sstream>
 #include <iostream>
-#include "ElectricMeter.h"
+#include "InterruptHandler.h"
 #include <cmath>
 #include <chrono>
+
 LCD::LCD() {
     InitializeConnectionConfiguration();
     i2c_port_t i2c_num = I2C_NUM_0;
@@ -118,8 +119,14 @@ void LCD::DisplayEnergyUsage(const std::uint64_t& impulses) const {
 void LCD::Blank() const {
     /*State of Air control will be displayed here. This screen will also allow
      * user to override default valve state*/
-    std::string line_1 = "blank line_1";
-    std::string line_2 = "blank line_2";
+    std::string line_1 = "Tryb: ";
+    line_1 += InterruptHandler::GetOverride() ? "Manual" : "Automat";
+    std::string line_2 = "Zrodlo: ";
+    if (!InterruptHandler::GetOverride()) {
+        line_2 += "Automat";
+    } else {
+        line_2 += InterruptHandler::GetManualInfo() ? "Wewn" : "Zewn";
+    }
     try {
         LCD::DisplayTwoLines(line_1, line_2);
     } catch (const std::invalid_argument& e) {
@@ -128,7 +135,7 @@ void LCD::Blank() const {
 }
 
 void LCD::DisplayScreen(std::array<float, MAX_DEVICES>& temp) {
-    std::uint16_t displayState = ElectricMeter::GetDisplayState();
+    std::uint16_t displayState = InterruptHandler::GetDisplayState();
     Setbacklight(displayState);
     switch (displayState) {
     case 0:
@@ -138,7 +145,7 @@ void LCD::DisplayScreen(std::array<float, MAX_DEVICES>& temp) {
         LCD::DisplayTemperature(temp[0], temp[1]);
         break;
     case 2:
-        LCD::DisplayEnergyUsage(ElectricMeter::GetPumpEnergyUsage());
+        LCD::DisplayEnergyUsage(InterruptHandler::GetPumpEnergyUsage());
         break;
     case 3:
         LCD::Blank();
@@ -177,10 +184,10 @@ uint8_t LCD::_wait_for_user(void) {
 
 void LCD::Setbacklight(const std::uint16_t& displayState) {
     uint64_t tenSeconds = 10000000;
-    if (displayState == 0 && ElectricMeter::GetLcdBacklight()) {
+    if (displayState == 0 && InterruptHandler::GetLcdBacklight()) {
         i2c_lcd1602_set_backlight(LcdInfo_, true);
         backlightTimer_ = esp_timer_get_time();
-        ElectricMeter::SetBacklightFromLcd() = false;
+        InterruptHandler::SetBacklightFromLcd() = false;
     }
     esp_timer_get_time();
     if (displayState == 0 &&

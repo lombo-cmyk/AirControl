@@ -1,4 +1,4 @@
-#include "ElectricMeter.h"
+#include "InterruptHandler.h"
 #include "driver/gpio.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -6,7 +6,7 @@
 #include "include/TemperatureSensor.h"
 #include <iostream>
 #include <memory>
-#include "src/Wifi.cpp"
+#include "src/Wifi.c"
 #include <ctime>
 #include <chrono>
 #include <iomanip>
@@ -19,11 +19,11 @@ void app_main();
 void app_main(void) {
     std::cout << "Esp starting" << std::endl;
     TemperatureSensor temp = TemperatureSensor();
-    ElectricMeter::Start();
+    InterruptHandler::Start();
     temp.FindDevices();
     temp.InitializeDevices();
     LCD LCDisplay = LCD();
-    aaa();
+    InitializeWifiConnection();
     std::array<float, MAX_DEVICES> temperature = {};
     for (;;) {
         temperature = temp.PerformTemperatureReadOut();
@@ -31,9 +31,9 @@ void app_main(void) {
             std::cout << "Temp is: " << t << " C" << std::endl;
         }
         LCDisplay.DisplayScreen(temperature);
-        std::cout << "kWh Pump: " << ElectricMeter::GetPumpEnergyUsage()
+        std::cout << "kWh Pump: " << InterruptHandler::GetPumpEnergyUsage()
                   << std::endl;
-        std::cout << "LCD State: " << ElectricMeter::GetDisplayState()
+        std::cout << "LCD State: " << InterruptHandler::GetDisplayState()
                   << std::endl;
         time_t now;
         char strftime_buf[64];

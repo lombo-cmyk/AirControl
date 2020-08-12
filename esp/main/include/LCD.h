@@ -31,7 +31,7 @@ private:
     void DisplayTemperature(const float& outsideTemp,
                             const float& insideTemp) const;
     void DisplayEnergyUsage(const std::uint64_t& impulses) const;
-    void Blank() const;
+    void DisplayAirSource() const;
     void DisplayWelcomeMessage() const;
     void Setbacklight(const std::uint16_t& displayState);
     std::string ProcessTime(const tm& t) const;

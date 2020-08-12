@@ -30,7 +30,6 @@
 #include "esp_sntp.h"
 #include "lwip/err.h"
 #include "lwip/sys.h"
-#include <iostream>
 /* The examples use WiFi configuration that you can set via project
    configuration menu
 

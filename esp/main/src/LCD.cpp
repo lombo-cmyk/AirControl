@@ -116,7 +116,7 @@ void LCD::DisplayEnergyUsage(const std::uint64_t& impulses) const {
     }
 }
 
-void LCD::Blank() const {
+void LCD::DisplayAirSource() const {
     /*State of Air control will be displayed here. This screen will also allow
      * user to override default valve state*/
     std::string line_1 = "Tryb: ";
@@ -148,7 +148,7 @@ void LCD::DisplayScreen(std::array<float, MAX_DEVICES>& temp) {
         LCD::DisplayEnergyUsage(InterruptHandler::GetPumpEnergyUsage());
         break;
     case 3:
-        LCD::Blank();
+        LCD::DisplayAirSource();
         break;
     default:
         break;

@@ -12,6 +12,7 @@
 #include <iomanip>
 #include <sstream>
 #include <string>
+#include <AirControlMotor.h>
 extern "C" {
 void app_main();
 }
@@ -25,6 +26,7 @@ void app_main(void) {
     LCD LCDisplay = LCD();
     InitializeWifiConnection();
     std::array<float, MAX_DEVICES> temperature = {};
+    AirControlMotor Motor;
     for (;;) {
         temperature = temp.PerformTemperatureReadOut();
         for (auto const& t : temperature) {
@@ -35,6 +37,9 @@ void app_main(void) {
                   << std::endl;
         std::cout << "LCD State: " << InterruptHandler::GetDisplayState()
                   << std::endl;
+        Motor.SetMotor(temperature,
+                       InterruptHandler::GetOverride(),
+                       InterruptHandler::GetManualInfo());
         time_t now;
         char strftime_buf[64];
         struct tm timeinfo;

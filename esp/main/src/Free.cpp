@@ -3,6 +3,7 @@
 //
 #include "ds18b20.h"
 #include <cstddef>
+
 const std::uint8_t oneWireBusBytes = 8;
 bool operator==(const OneWireBus_ROMCode& lhs, const OneWireBus_ROMCode& rhs) {
     for (int i = 0; i < oneWireBusBytes; i++) {

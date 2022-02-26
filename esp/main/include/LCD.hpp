@@ -8,7 +8,7 @@
 #include "driver/i2c.h"
 #include "i2c-lcd1602.h"
 #include <string>
-#include "TemperatureSensor.h"
+#include "TemperatureSensor.hpp"
 
 class LCD {
 public:

@@ -2,16 +2,16 @@
 // Created by lukaszk on 16.07.2020.
 //
 
-#include "LCD.h"
+#include "LCD.hpp"
 #include "sdkconfig.h"
 #include "smbus.h"
-#include "Definitions.h"
+#include "Definitions.hpp"
 #include "string"
 #include <stdexcept>
 #include <iomanip>
 #include <sstream>
 #include <iostream>
-#include "InterruptHandler.h"
+#include "InterruptHandler.hpp"
 #include <cmath>
 #include <chrono>
 

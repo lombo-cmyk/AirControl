@@ -2,10 +2,8 @@
 // Created by lukaszk on 09.07.2020.
 //
 
-#include "../include/TemperatureSensor.h"
+#include "../include/TemperatureSensor.hpp"
 #include "Free.cpp"
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
 #include <iostream>
 #include <string>
 #include <mutex>

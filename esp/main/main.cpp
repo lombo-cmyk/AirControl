@@ -1,19 +1,12 @@
-#include "InterruptHandler.h"
-#include "driver/gpio.h"
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
-#include "LCD.h"
-#include "include/TemperatureSensor.h"
-#include <iostream>
-#include <memory>
-//#include "src/Wifi.c"
 #include <ctime>
-#include <chrono>
-#include <iomanip>
-#include <sstream>
-#include <string>
-#include <AirControlMotor.h>
-#include "Wifi.h"
+#include <iostream>
+
+#include "InterruptHandler.hpp"
+#include "LCD.hpp"
+#include "TemperatureSensor.hpp"
+#include <AirControlMotor.hpp>
+#include "Wifi.hpp"
+
 extern "C" {
 void app_main();
 }

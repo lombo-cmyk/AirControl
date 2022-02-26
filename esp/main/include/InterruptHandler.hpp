@@ -2,10 +2,10 @@
 // Created by lukaszk on 12.07.2020.
 //
 
-#ifndef AIRCONTROLLER_INTERRUPTHANDLER_H
-#define AIRCONTROLLER_INTERRUPTHANDLER_H
+#ifndef AIRCONTROLLER_INTERRUPTHANDLER_HPP
+#define AIRCONTROLLER_INTERRUPTHANDLER_HPP
 
-#include "Definitions.h"
+#include "Definitions.hpp"
 #include "freertos/FreeRTOS.h"
 #include "freertos//task.h"
 #include <cstdint>
@@ -45,4 +45,4 @@ private:
     static void SetAirManually(void* arg);
 };
 
-#endif // AIRCONTROLLER_INTERRUPTHANDLER_H
+#endif // AIRCONTROLLER_INTERRUPTHANDLER_HPP

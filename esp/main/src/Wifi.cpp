@@ -10,7 +10,7 @@
 #include "esp_log.h"
 #include "nvs_flash.h"
 
-#include <Wifi.h>
+#include <Wifi.hpp>
 
 uint8_t Wifi::numberOfConnRetries_ = 0;
 EventGroupHandle_t Wifi::wifiEventGroup_{};

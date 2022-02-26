@@ -2,10 +2,10 @@
 // Created by lukaszk on 09.07.2020.
 //
 
-#ifndef AIRCONTROLLER_TEMPERATURESENSOR_H
-#define AIRCONTROLLER_TEMPERATURESENSOR_H
+#ifndef AIRCONTROLLER_TEMPERATURESENSOR_HPP
+#define AIRCONTROLLER_TEMPERATURESENSOR_HPP
 
-#include "Definitions.h"
+#include "Definitions.hpp"
 #include "ds18b20.h"
 #include "owb.h"
 #include "owb_rmt.h"
@@ -33,9 +33,9 @@ private:
     bool found_ = false;
     owb_rmt_driver_info rmtDriverInfo_{};
     OneWireBus* oneWireInterface_;
-    OneWireBus_SearchState searchState_ = {0};
+    OneWireBus_SearchState searchState_ = {};
     DS18B20_ERROR errors_[MAX_DEVICES] = {DS18B20_OK};
-    DS18B20_Info* devices_[MAX_DEVICES] = {0};
+    DS18B20_Info* devices_[MAX_DEVICES] = {};
     OneWireBus_ROMCode outsideSensor_ = {{.family = {0x28},
                                           .serial_number =
                                               {
@@ -64,4 +64,4 @@ private:
     // insideSensor_ -> 1
 };
 
-#endif // AIRCONTROLLER_TEMPERATURESENSOR_H
+#endif // AIRCONTROLLER_TEMPERATURESENSOR_HPP

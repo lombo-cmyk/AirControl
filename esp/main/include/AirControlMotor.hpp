@@ -2,11 +2,11 @@
 // Created by lukaszk on 12.08.2020.
 //
 
-#ifndef AIRCONTROLLER_AIRCONTROLMOTOR_H
-#define AIRCONTROLLER_AIRCONTROLMOTOR_H
+#ifndef AIRCONTROLLER_AIRCONTROLMOTOR_HPP
+#define AIRCONTROLLER_AIRCONTROLMOTOR_HPP
 
 #include <array>
-#include "Definitions.h"
+#include "Definitions.hpp"
 #include "freertos/FreeRTOS.h"
 #include "freertos//task.h"
 
@@ -25,4 +25,4 @@ private:
     void SetPin();
 };
 
-#endif // AIRCONTROLLER_AIRCONTROLMOTOR_H
+#endif // AIRCONTROLLER_AIRCONTROLMOTOR_HPP

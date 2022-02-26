@@ -6,13 +6,14 @@
 #include "include/TemperatureSensor.h"
 #include <iostream>
 #include <memory>
-#include "src/Wifi.c"
+//#include "src/Wifi.c"
 #include <ctime>
 #include <chrono>
 #include <iomanip>
 #include <sstream>
 #include <string>
 #include <AirControlMotor.h>
+#include "Wifi.h"
 extern "C" {
 void app_main();
 }
@@ -24,7 +25,7 @@ void app_main(void) {
     temp.FindDevices();
     temp.InitializeDevices();
     LCD LCDisplay = LCD();
-    InitializeWifiConnection();
+    Wifi::StartWifi();
     std::array<float, MAX_DEVICES> temperature = {};
     AirControlMotor Motor;
     for (;;) {
@@ -46,7 +47,7 @@ void app_main(void) {
         time(&now);
         localtime_r(&now, &timeinfo);
         strftime(strftime_buf, sizeof(strftime_buf), "%c", &timeinfo);
-        ESP_LOGI(TAG, "The current date/time is: %s", strftime_buf);
+        ESP_LOGI("main", "The current date/time is: %s", strftime_buf);
         vTaskDelay(2000.0 / portTICK_PERIOD_MS);
     }
 }

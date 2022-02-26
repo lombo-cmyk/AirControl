@@ -1,5 +1,9 @@
 #include <ctime>
 #include <iostream>
+#include <iomanip>
+#include <sstream>
+
+#include "esp_log.h"
 
 #include "InterruptHandler.hpp"
 #include "LCD.hpp"
@@ -34,13 +38,11 @@ void app_main(void) {
         Motor.SetMotor(temperature,
                        InterruptHandler::GetOverride(),
                        InterruptHandler::GetManualInfo());
-        time_t now;
-        char strftime_buf[64];
-        struct tm timeinfo;
-        time(&now);
-        localtime_r(&now, &timeinfo);
-        strftime(strftime_buf, sizeof(strftime_buf), "%c", &timeinfo);
-        ESP_LOGI("main", "The current date/time is: %s", strftime_buf);
+
+        std::time_t t = std::time(nullptr);
+        std::ostringstream stream;
+        stream << std::put_time(std::localtime(&t), "%d-%m-%Y %H:%M:%S");
+        ESP_LOGI("main", "The current date/time is: %s", stream.str().c_str());
         vTaskDelay(2000.0 / portTICK_PERIOD_MS);
     }
 }

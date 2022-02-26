@@ -1,13 +1,8 @@
 //
 // Created by Lukasz on 26.02.2022.
 //
-#include <string>
-#include "freertos/FreeRTOS.h"
 #include "freertos/event_groups.h"
-#include "esp_system.h"
-#include "esp_wifi.h"
 #include "esp_event.h"
-#include "esp_log.h"
 
 #ifndef AIRCONTROLLER_WIFI_H
 #define AIRCONTROLLER_WIFI_H

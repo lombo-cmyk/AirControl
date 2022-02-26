@@ -9,8 +9,8 @@
 #include "esp_event.h"
 #include "esp_log.h"
 #include "nvs_flash.h"
-
-#include <Wifi.hpp>
+#include "Wifi.hpp"
+#include "Sntp.hpp"
 
 uint8_t Wifi::numberOfConnRetries_ = 0;
 EventGroupHandle_t Wifi::wifiEventGroup_{};
@@ -67,6 +67,7 @@ void Wifi::StartWifi() {
     ESP_ERROR_CHECK(ret);
     ESP_LOGI(WifiTag_, "Starting Station mode.");
     Wifi::WifiInitStation();
+    Sntp::SyncTime();
 }
 /* ******** End Public ******** */
 
@@ -147,4 +148,8 @@ void Wifi::UnregisterHandlers(esp_event_handler_instance_t *wifiEvent, esp_event
     ESP_ERROR_CHECK(esp_event_handler_instance_unregister(IP_EVENT, IP_EVENT_STA_GOT_IP, wifiEvent));
     ESP_ERROR_CHECK(esp_event_handler_instance_unregister(WIFI_EVENT, ESP_EVENT_ANY_ID, ipEvent));
 }
+
+
+
+
 /* ******** End Private ******** */

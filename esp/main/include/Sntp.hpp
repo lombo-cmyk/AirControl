@@ -6,12 +6,13 @@
 #define AIRCONTROLLER_SNTP_H
 
 #include "freertos/event_groups.h"
+#include <string_view>
 
 class Sntp {
 public:
     static void SyncTime();
 private:
-    static constexpr char *SntpTag_ = (char*)"Sntp";
+    static constexpr std::string_view SntpTag_ = "Sntp";
     static EventGroupHandle_t sntpEventGroup_;
 
     static constexpr u_int8_t timeSynchronizedBit_ = BIT0;

@@ -7,6 +7,7 @@
 #include "smbus.h"
 #include "Definitions.hpp"
 #include "string"
+#include "Logger.hpp"
 #include <stdexcept>
 #include <iomanip>
 #include <sstream>
@@ -86,7 +87,7 @@ void LCD::DisplayTime() const {
     try {
         LCD::DisplayTwoLines(std::get<0>(dateTime), std::get<1>(dateTime));
     } catch (const std::invalid_argument& e) {
-        std::cout << "Lcd exception thrown: " << e.what() << std::endl;
+        LogInfo(LcdTag_, "Lcd exception thrown: ", e.what());
     }
 }
 
@@ -100,7 +101,7 @@ void LCD::DisplayTemperature(const float& outsideTemp,
     try {
         DisplayTwoLines(firstLine, secondLine);
     } catch (const std::invalid_argument& e) {
-        std::cout << "Lcd exception thrown: " << e.what() << std::endl;
+        LogInfo(LcdTag_, "Lcd exception thrown: ", e.what());
     }
 }
 
@@ -112,7 +113,7 @@ void LCD::DisplayEnergyUsage(const std::uint64_t& impulses) const {
     try {
         LCD::DisplayTwoLines(s1, s2);
     } catch (const std::invalid_argument& e) {
-        std::cout << "Lcd exception thrown: " << e.what() << std::endl;
+        LogInfo(LcdTag_, "Lcd exception thrown: ", e.what());
     }
 }
 
@@ -130,7 +131,7 @@ void LCD::DisplayAirSource() const {
     try {
         LCD::DisplayTwoLines(line_1, line_2);
     } catch (const std::invalid_argument& e) {
-        std::cout << "Lcd exception thrown: " << e.what() << std::endl;
+        LogInfo(LcdTag_, "Lcd exception thrown: ", e.what());
     }
 }
 
@@ -161,7 +162,7 @@ void LCD::DisplayWelcomeMessage() const {
     try {
         DisplayTwoLines(welcomeMessage1, welcomeMessage2);
     } catch (const std::invalid_argument& e) {
-        std::cout << "Lcd exception thrown: " << e.what() << std::endl;
+        LogInfo(LcdTag_, "Lcd exception thrown: ", e.what());
     }
 }
 

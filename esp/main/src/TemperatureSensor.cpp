@@ -4,6 +4,7 @@
 
 #include "../include/TemperatureSensor.hpp"
 #include "Free.cpp"
+#include "Logger.hpp"
 #include <iostream>
 #include <string>
 #include <mutex>
@@ -19,11 +20,11 @@ TemperatureSensor::TemperatureSensor() {
 }
 
 void TemperatureSensor::FindDevices() {
-    std::cout << "Found devices:" << std::endl;
+    LogInfo(TemperatureTag_, "Found devices:");
     while (found_) {
         std::string device = TemperatureSensor::CreateStringFromRom(
             searchState_.rom_code);
-        std::cout << noDevices_ << " : " << device << std::endl;
+        LogInfo(TemperatureTag_, noDevices_, " : ", device);
         if (searchState_.rom_code == knownDevices_[0] ||
             searchState_.rom_code == knownDevices_[1]) {
             //            device_rom_codes[noDevices_] = searchState_.rom_code;
@@ -34,12 +35,10 @@ void TemperatureSensor::FindDevices() {
         totalDevicesNo_++;
     }
     if (noDevices_ != totalDevicesNo_) {
-        std::cout << "Unwanted devices detected!!! Total NoDevices: "
-                  << totalDevicesNo_ << std::endl;
+        LogInfo(TemperatureTag_, "Unwanted devices detected!!! Total NoDevices: ", totalDevicesNo_);
     }
+    LogInfo(TemperatureTag_, "Found ", noDevices_, "device", (noDevices_ == 1 ? "" : "s"));
 
-    std::cout << "Found " << noDevices_ << "device"
-              << (noDevices_ == 1 ? "" : "s") << std::endl;
     if (noDevices_ != 2)
         esp_restart();
 }
@@ -104,10 +103,8 @@ template<std::size_t index>
 void TemperatureSensor::DisplayTemperature(
     std::array<float, index> readings) const {
     for (int i = 0; i < noDevices_; ++i) {
-        std::cout << "Temperature readings for "
-                  << TemperatureSensor::CreateStringFromRom(
-                         devices_[i]->rom_code)
-                  << " : " << readings[i]++ << std::endl;
+        LogInfo(TemperatureTag_, "Temperature readings for ", TemperatureSensor::CreateStringFromRom(
+                devices_[i]->rom_code), readings[i]++);
     }
 }
 

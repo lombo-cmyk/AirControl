@@ -17,6 +17,7 @@ public:
     void DisplayScreen(std::array<float, MAX_DEVICES>& temp);
 
 private:
+    static constexpr std::string_view LcdTag_ = "LCD";
     i2c_config_t connectionConfiguration_ = {};
     i2c_lcd1602_info_t* LcdInfo_ = new i2c_lcd1602_info_t;
     bool isBacklight_ = true;

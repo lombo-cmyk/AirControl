@@ -44,7 +44,7 @@ void InterruptHandler::OverrideAutomatic(void* arg) {
 void InterruptHandler::SetAirManually(void* arg) {
     if ((xTaskGetTickCount() - lastWakeTimeInsideAirManualButton_) >
         DEBOUNCE_TIME) {
-        if (displayState_ == 3 && override_ == true) {
+        if (displayState_ == 3 && override_) {
             useInsideAirManual_ = !useInsideAirManual_;
         }
         lastWakeTimeInsideAirManualButton_ = xTaskGetTickCount();

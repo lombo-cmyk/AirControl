@@ -17,7 +17,7 @@ void app_main();
 }
 
 void app_main(void) {
-    std::cout << "Esp starting" << std::endl;
+    LogInfo("main", "Esp starting");
     TemperatureSensor temp = TemperatureSensor();
     InterruptHandler::Start();
     temp.FindDevices();
@@ -32,10 +32,8 @@ void app_main(void) {
             std::cout << "Temp is: " << t << " C" << std::endl;
         }
         LCDisplay.DisplayScreen(temperature);
-        std::cout << "kWh Pump: " << InterruptHandler::GetPumpEnergyUsage()
-                  << std::endl;
-        std::cout << "LCD State: " << InterruptHandler::GetDisplayState()
-                  << std::endl;
+        LogInfo("main", "kWh Pump: ", InterruptHandler::GetPumpEnergyUsage());
+        LogInfo("main", "LCD State: ", InterruptHandler::GetDisplayState());
         Motor.SetMotor(temperature,
                        InterruptHandler::GetOverride(),
                        InterruptHandler::GetManualInfo());

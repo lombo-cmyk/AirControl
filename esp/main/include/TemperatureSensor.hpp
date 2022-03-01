@@ -28,6 +28,7 @@ private:
     template<unsigned int T>
     void DisplayTemperature(std::array<float, T> reading) const;
 
+    static constexpr std::string_view TemperatureTag_ = "LCD";
     int noDevices_ = 0;
     int totalDevicesNo_ = 0;
     bool found_ = false;

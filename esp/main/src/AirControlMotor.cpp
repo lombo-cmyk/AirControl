@@ -2,7 +2,7 @@
 // Created by lukaszk on 12.08.2020.
 //
 
-#include "../include/AirControlMotor.hpp"
+#include "AirControlMotor.hpp"
 
 void AirControlMotor::SetMotor(const std::array<float, MAX_DEVICES> temp,
                                const bool isOverride,

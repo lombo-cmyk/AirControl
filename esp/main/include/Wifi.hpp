@@ -12,10 +12,10 @@ class Wifi {
 public:
     static void StartWifi();
 private:
-    static constexpr char *WifiTag_ = (char*)"Wifi connection";
+    static constexpr std::string_view WifiTag_ = "Wifi connection";
 
-    static constexpr char *pSsid_ = (char*)CONFIG_ESP_WIFI_SSID;
-    static constexpr char *pPassword_ = (char*)CONFIG_ESP_WIFI_PASSWORD;
+    static constexpr std::string_view ssid_ = CONFIG_ESP_WIFI_SSID;
+    static constexpr std::string_view password = CONFIG_ESP_WIFI_PASSWORD;
     static constexpr int pMaxRetry_ = CONFIG_ESP_MAXIMUM_RETRY;
 
     static constexpr u_int8_t connectedBit_ = BIT0;

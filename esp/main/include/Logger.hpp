@@ -5,19 +5,23 @@
 #ifndef AIRCONTROLLER_LOGGER_H
 #define AIRCONTROLLER_LOGGER_H
 #include <string>
+#include <iomanip>
 #include "sntp.h"
+#include "esp_log.h"
+#include <cstdarg>
 
-void LogInfo(std::string_view tag, const std::string& logInfo);
-
-template<typename T>
-void LogInfo(std::string_view tag, const std::string &logInfo, T reading){
-    ESP_LOGI(tag.begin(), "%s %d", logInfo.c_str(), reading);
+template<typename... Targs>
+std::string PrepareLogString(Targs... Fargs){
+    std::ostringstream ss1;
+    (ss1 << ... << Fargs);
+    return ss1.str();
 }
 
-template<>
-void LogInfo<std::ostringstream*>(std::string_view tag, const std::string &logInfo, std::ostringstream *reading);
-
-template<>
-void LogInfo<std::string*>(std::string_view tag, const std::string &logInfo, std::string *reading);
+template<typename... Targs>
+void LogInfo(std::string_view Tag, Targs... Fargs){
+    std::string s;
+    s = PrepareLogString(Fargs...);
+    ESP_LOGI(Tag.begin(), "%s", s.c_str());
+}
 
 #endif //AIRCONTROLLER_LOGGER_H

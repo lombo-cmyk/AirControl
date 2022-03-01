@@ -35,8 +35,7 @@ void Sntp::InitializeSntp() {
     sntp_set_time_sync_notification_cb(TimeSetCallback);
     sntp_init();
     if (sntp_getservername(0)){
-        std::string serverName(sntp_getservername(0));
-        LogInfo(SntpTag_, "Server: ", &serverName);
+        LogInfo(SntpTag_, "Server: ", sntp_getservername(0));
     }
 }
 
@@ -44,7 +43,7 @@ void Sntp::TimeSetCallback(struct timeval *tv) {
     auto tm = *std::localtime(&tv->tv_sec);
     std::ostringstream ss;
     ss << std::put_time(&tm, "%d-%m-%Y %H:%M:%S");
-    LogInfo(SntpTag_, "Time sync event. Time: ", &ss);
+    LogInfo(SntpTag_, "Time sync event. Time: ", ss.str());
     xEventGroupSetBits(sntpEventGroup_, timeSynchronizedBit_);
 }
 

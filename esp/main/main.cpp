@@ -4,6 +4,7 @@
 #include <sstream>
 
 #include "esp_log.h"
+#include "Logger.hpp"
 
 #include "InterruptHandler.hpp"
 #include "LCD.hpp"
@@ -42,7 +43,7 @@ void app_main(void) {
         std::time_t t = std::time(nullptr);
         std::ostringstream stream;
         stream << std::put_time(std::localtime(&t), "%d-%m-%Y %H:%M:%S");
-        ESP_LOGI("main", "The current date/time is: %s", stream.str().c_str());
+        LogInfo("main", "The current date/time is: ", stream.str());
         vTaskDelay(2000.0 / portTICK_PERIOD_MS);
     }
 }

@@ -8,6 +8,7 @@
 #include "esp_wifi.h"
 #include "esp_event.h"
 #include "esp_log.h"
+#include "Logger.hpp"
 #include "nvs_flash.h"
 #include "Wifi.hpp"
 #include "Sntp.hpp"
@@ -31,16 +32,16 @@ void Wifi::WifiEventCallback(void* arg, esp_event_base_t eventBase,
             if (numberOfConnRetries_ < pMaxRetry_) {
                 esp_wifi_connect();
                 numberOfConnRetries_++;
-                ESP_LOGI(WifiTag_, "Trying to connect to AP... %d/%d", numberOfConnRetries_, pMaxRetry_);
+                LogInfo(WifiTag_, "Trying to connect to AP...", numberOfConnRetries_, "/", pMaxRetry_);
             }
             else {
                 xEventGroupSetBits(wifiEventGroup_, connectedFailBit_);
-                ESP_LOGI(WifiTag_,"AP connection failed");
+                LogInfo(WifiTag_, "AP connection failed");
             }
             break;
         }
         default:{
-            ESP_LOGI(WifiTag_, "Uncovered event: %d", eventId);
+            LogInfo(WifiTag_, "Uncovered event: ", eventId);
         }
 
     }
@@ -51,7 +52,9 @@ void Wifi::IpEventCallback(void *arg, esp_event_base_t eventBase, int32_t eventI
     (void)eventBase;
     (void)eventId;
     auto* event = (ip_event_got_ip_t*) eventData;
-    ESP_LOGI(WifiTag_, "Connected. IP: " IPSTR, IP2STR(&event->ip_info.ip));
+    char buffer[16];
+    sprintf(buffer, IPSTR, IP2STR(&event->ip_info.ip));
+    LogInfo(WifiTag_, "Connected. IP: ", buffer);
     numberOfConnRetries_ = 0;
     xEventGroupSetBits(wifiEventGroup_, Wifi::connectedBit_);
 }
@@ -65,7 +68,7 @@ void Wifi::StartWifi() {
         ret = nvs_flash_init();
     }
     ESP_ERROR_CHECK(ret);
-    ESP_LOGI(WifiTag_, "Starting Station mode.");
+    LogInfo(WifiTag_, "Starting Station mode.");
     Wifi::WifiInitStation();
     Sntp::SyncTime();
 }
@@ -97,8 +100,8 @@ void Wifi::EspWifiInit() {
 
 void Wifi::ConfigureConnection(wifi_config_t *wifiConfig) {
     wifi_sta_config_t wifiStationCfg = {};
-    memcpy(wifiStationCfg.ssid, Wifi::pSsid_, strlen(Wifi::pSsid_) + 1);
-    memcpy(wifiStationCfg.password, Wifi::pPassword_, strlen(Wifi::pPassword_) + 1);
+    memcpy(wifiStationCfg.ssid, ssid_.begin(), ssid_.length() + 1);
+    memcpy(wifiStationCfg.password, password.begin(), password.length() + 1);
     wifiStationCfg.threshold.authmode = WIFI_AUTH_WPA2_PSK;
 
     wifiConfig->sta = wifiStationCfg;
@@ -111,7 +114,7 @@ void Wifi::ConnectToAP() {
 
     ESP_ERROR_CHECK(esp_wifi_start());
 
-    ESP_LOGI(WifiTag_, "Init cfg finished. Connecting...");
+    LogInfo(WifiTag_, "Init cfg finished. Connecting...");
     WaitForConnection();
 
     UnregisterHandlers(&wifiEventHandler, &ipEventHandler);
@@ -138,9 +141,9 @@ void Wifi::WaitForConnection() {
                                                                     portMAX_DELAY);
 
     if (bits[connectedBitIndex_]) {
-        ESP_LOGI(WifiTag_, "connected to AP SSID: %s password: *** :)", pSsid_);
+        LogInfo(WifiTag_, "connected to AP SSID: ", ssid_, " password: *** :)");
     } else if (bits[connectedFailBitIndex_]) {
-        ESP_LOGI(WifiTag_, "Failed to connect to SSID:%s, password: *** :)", pSsid_);
+        LogInfo(WifiTag_, "Failed to connect to SSID: ", ssid_, " password: *** :)");
     }
 }
 

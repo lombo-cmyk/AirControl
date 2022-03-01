@@ -1,4 +1,4 @@
-menu "Wifi configuration"
+menu "Project configuration"
 
     config ESP_WIFI_SSID
         string "WiFi SSID"
@@ -17,4 +17,10 @@ menu "Wifi configuration"
         default 5
         help
             Set the Maximum retry to avoid station reconnecting to the AP unlimited when the AP is unreachable.
+
+    config INCLUDE_STUBS
+        bool "Include stubs instead of actual devices"
+        default 0
+        help
+            Set the variable to True to stub peripheral devices
 endmenu

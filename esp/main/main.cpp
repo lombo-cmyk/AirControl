@@ -2,15 +2,18 @@
 #include <iostream>
 #include <iomanip>
 #include <sstream>
-
 #include "esp_log.h"
-#include "Logger.hpp"
-
 #include "InterruptHandler.hpp"
+#include "Wifi.hpp"
+#include "Logger.hpp"
+#include "AirControlMotor.hpp"
+
+#ifdef CONFIG_INCLUDE_STUBS
+#include "Stubs.hpp"
+#else
 #include "LCD.hpp"
 #include "TemperatureSensor.hpp"
-#include <AirControlMotor.hpp>
-#include "Wifi.hpp"
+#endif
 
 extern "C" {
 void app_main();

@@ -7,10 +7,10 @@
 #ifndef AIRCONTROLLER_WIFI_H
 #define AIRCONTROLLER_WIFI_H
 
-
 class Wifi {
 public:
     static void StartWifi();
+
 private:
     static constexpr std::string_view WifiTag_ = "Wifi connection";
 
@@ -26,19 +26,24 @@ private:
     static uint8_t numberOfConnRetries_;
     static EventGroupHandle_t wifiEventGroup_;
 
-    static void WifiEventCallback(void* arg, esp_event_base_t eventBase,
-                                  int32_t eventId, void* eventData);
-    static void IpEventCallback(void* arg, esp_event_base_t eventBase,
-                                int32_t eventId, void* eventData);
+    static void WifiEventCallback(void* arg,
+                                  esp_event_base_t eventBase,
+                                  int32_t eventId,
+                                  void* eventData);
+    static void IpEventCallback(void* arg,
+                                esp_event_base_t eventBase,
+                                int32_t eventId,
+                                void* eventData);
 
     static void WifiInitStation();
     static void EspWifiInit();
-    static void ConfigureConnection(wifi_config_t *wifiConfig);
+    static void ConfigureConnection(wifi_config_t* wifiConfig);
     static void ConnectToAP();
-    static void RegisterHandlers(esp_event_handler_instance_t *wifiEvent, esp_event_handler_instance_t *ipEvent);
+    static void RegisterHandlers(esp_event_handler_instance_t* wifiEvent,
+                                 esp_event_handler_instance_t* ipEvent);
     static void WaitForConnection();
-    static void UnregisterHandlers(esp_event_handler_instance_t *wifiEvent, esp_event_handler_instance_t *ipEvent);
+    static void UnregisterHandlers(esp_event_handler_instance_t* wifiEvent,
+                                   esp_event_handler_instance_t* ipEvent);
 };
 
-
-#endif //AIRCONTROLLER_WIFI_H
+#endif // AIRCONTROLLER_WIFI_H

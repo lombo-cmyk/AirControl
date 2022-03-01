@@ -9,25 +9,26 @@
 
 class LCD {
 public:
-    static void AdjustLine(std::string &line) {};
-    void DisplayScreen(std::array<float, MAX_DEVICES> &temp) {};
+    static void AdjustLine(std::string& line){};
+    void DisplayScreen(std::array<float, MAX_DEVICES>& temp){};
 };
 
 class TemperatureSensor {
 public:
-    void FindDevices() {};
+    void FindDevices(){};
 
-    void InitializeDevices() {};
+    void InitializeDevices(){};
 
-    void Run() {};
+    void Run(){};
 
     std::array<float, MAX_DEVICES> PerformTemperatureReadOut() {
-        a[0] +=.1;
-        a[1] +=.1;
+        a[0] += .1;
+        a[1] += .1;
         return a;
     };
+
 private:
     std::array<float, MAX_DEVICES> a{1.1, 2.2};
 };
 
-#endif //AIRCONTROLLER_STUBS_H
+#endif // AIRCONTROLLER_STUBS_H

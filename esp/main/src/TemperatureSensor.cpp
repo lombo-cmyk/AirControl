@@ -35,9 +35,15 @@ void TemperatureSensor::FindDevices() {
         totalDevicesNo_++;
     }
     if (noDevices_ != totalDevicesNo_) {
-        LogInfo(TemperatureTag_, "Unwanted devices detected!!! Total NoDevices: ", totalDevicesNo_);
+        LogInfo(TemperatureTag_,
+                "Unwanted devices detected!!! Total NoDevices: ",
+                totalDevicesNo_);
     }
-    LogInfo(TemperatureTag_, "Found ", noDevices_, "device", (noDevices_ == 1 ? "" : "s"));
+    LogInfo(TemperatureTag_,
+            "Found ",
+            noDevices_,
+            "device",
+            (noDevices_ == 1 ? "" : "s"));
 
     if (noDevices_ != 2)
         esp_restart();
@@ -103,8 +109,10 @@ template<std::size_t index>
 void TemperatureSensor::DisplayTemperature(
     std::array<float, index> readings) const {
     for (int i = 0; i < noDevices_; ++i) {
-        LogInfo(TemperatureTag_, "Temperature readings for ", TemperatureSensor::CreateStringFromRom(
-                devices_[i]->rom_code), readings[i]++);
+        LogInfo(TemperatureTag_,
+                "Temperature readings for ",
+                TemperatureSensor::CreateStringFromRom(devices_[i]->rom_code),
+                readings[i]++);
     }
 }
 

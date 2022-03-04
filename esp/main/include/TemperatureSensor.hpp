@@ -9,34 +9,39 @@
 #include "ds18b20.h"
 #include "owb.h"
 #include "owb_rmt.h"
+#include "Singleton.h"
 #include <array>
 #include <cstdint>
 #include <memory>
+#include <map>
 
-class TemperatureSensor {
+typedef uint8_t crc_key;
+
+class TemperatureSensor final : public Singleton<TemperatureSensor> {
 public:
-    TemperatureSensor();
-    void FindDevices();
-    void InitializeDevices();
+    friend Singleton<TemperatureSensor>;
+    void Init();
     void Run();
-    std::array<float, MAX_DEVICES> PerformTemperatureReadOut();
 
 private:
-    std::string CreateStringFromRom(OneWireBus_ROMCode device) const;
-    bool IsErrorInReading() const;
-    std::array<float, MAX_DEVICES> ReadTemperature();
-    template<unsigned int T>
-    void DisplayTemperature(std::array<float, T> reading) const;
-
-    static constexpr std::string_view TemperatureTag_ = "LCD";
-    int noDevices_ = 0;
-    int totalDevicesNo_ = 0;
-    bool found_ = false;
+    static constexpr std::string_view temperatureTag_ = "Temp";
+    static constexpr std::string_view outsideKey_ = "outside";
+    static constexpr std::string_view insideKey_ = "inside";
+    std::map<crc_key, std::shared_ptr<DS18B20_Info>> devices_ = {};
     owb_rmt_driver_info rmtDriverInfo_{};
+
     OneWireBus* oneWireInterface_;
-    OneWireBus_SearchState searchState_ = {};
-    DS18B20_ERROR errors_[MAX_DEVICES] = {DS18B20_OK};
-    DS18B20_Info* devices_[MAX_DEVICES] = {};
+    TaskHandle_t taskHandle_ = nullptr;
+    void InitializeDevice(const OneWireBus_ROMCode& rom);
+
+    void FindDevices();
+    void PerformTemperatureReadOut(std::map<crc_key, float>* readings) const;
+    DS18B20_ERROR ReadTemperature(std::map<crc_key, float>* readings) const;
+
+    void PublishTemperature(const std::map<crc_key, float>& readings) const;
+    static std::string CreateStringFromRom(OneWireBus_ROMCode device);
+
+    static void RunInfinity(void* pvParameters);
     OneWireBus_ROMCode outsideSensor_ = {{.family = {0x28},
                                           .serial_number =
                                               {
@@ -48,6 +53,7 @@ private:
                                                   0x00,
                                               },
                                           .crc = {0xe1}}};
+
     OneWireBus_ROMCode insideSensor_ = {{.family = {0x28},
                                          .serial_number =
                                              {
@@ -59,10 +65,9 @@ private:
                                                  0x01,
                                              },
                                          .crc = {0x46}}};
-    const std::array<OneWireBus_ROMCode, 2> knownDevices_{outsideSensor_,
-                                                          insideSensor_};
-    // outsideSensor_ -> 0
-    // insideSensor_ -> 1
+    std::map<crc_key, std::string_view> sensorMap_ = {
+        {outsideSensor_.fields.crc[0], outsideKey_},
+        {insideSensor_.fields.crc[0], insideKey_}};
 };
 
 #endif // AIRCONTROLLER_TEMPERATURESENSOR_HPP

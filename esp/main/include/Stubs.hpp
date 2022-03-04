@@ -7,28 +7,25 @@
 
 #include "Definitions.hpp"
 
+#ifdef CONFIG_STUB_LCD
 class LCD {
 public:
     static void AdjustLine(std::string& line){};
     void DisplayScreen(std::array<float, MAX_DEVICES>& temp){};
 };
+#else
+#include "LCD.hpp"
+#endif
 
-class TemperatureSensor {
+#ifdef CONFIG_STUB_TEMP
+class TemperatureSensor final : public Singleton<TemperatureSensor> {
 public:
-    void FindDevices(){};
-
-    void InitializeDevices(){};
-
+    friend Singleton<TemperatureSensor>;
+    void Init(){};
     void Run(){};
-
-    std::array<float, MAX_DEVICES> PerformTemperatureReadOut() {
-        a[0] += .1;
-        a[1] += .1;
-        return a;
-    };
-
-private:
-    std::array<float, MAX_DEVICES> a{1.1, 2.2};
 };
+#else
+#include "TemperatureSensor.hpp"
+#endif
 
 #endif // AIRCONTROLLER_STUBS_H

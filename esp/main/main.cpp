@@ -1,5 +1,4 @@
 #include <ctime>
-#include <iostream>
 #include <iomanip>
 #include <sstream>
 #include "esp_log.h"
@@ -9,7 +8,9 @@
 #include "AirControlMotor.hpp"
 
 #ifdef CONFIG_INCLUDE_STUBS
+
 #include "Stubs.hpp"
+
 #else
 #include "LCD.hpp"
 #include "TemperatureSensor.hpp"
@@ -21,19 +22,15 @@ void app_main();
 
 void app_main(void) {
     LogInfo("main", "Esp starting");
-    TemperatureSensor temp = TemperatureSensor();
+    auto &temp = TemperatureSensor::getInstance();
+    temp.Init();
     InterruptHandler::Start();
-    temp.FindDevices();
-    temp.InitializeDevices();
     LCD LCDisplay = LCD();
     Wifi::StartWifi();
-    std::array<float, MAX_DEVICES> temperature = {};
+    std::array<float, MAX_DEVICES> temperature = {1.1, 2.2};
     AirControlMotor Motor;
+    temp.Run();
     for (;;) {
-        temperature = temp.PerformTemperatureReadOut();
-        for (auto const& t : temperature) {
-            std::cout << "Temp is: " << t << " C" << std::endl;
-        }
         LCDisplay.DisplayScreen(temperature);
         LogInfo("main", "kWh Pump: ", InterruptHandler::GetPumpEnergyUsage());
         LogInfo("main", "LCD State: ", InterruptHandler::GetDisplayState());
@@ -48,3 +45,8 @@ void app_main(void) {
         vTaskDelay(2000.0 / portTICK_PERIOD_MS);
     }
 }
+
+
+/* Add it to readme
+  thanks for the reports, but unfortunately failed to reproduce the issue. Could you please try to add --target=riscv32-unknown-unknown-unknown to the list of clangd options? (File | Settings | Languages & Frameworks | C/C++ | Clangd, field under Clang Errors And Warnings).
+@Jens Otto, any chance you can go into file with errors and do Help | Find Actions | clangd: report bug? Also please try the option above */

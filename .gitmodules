@@ -10,3 +10,6 @@
 [submodule "esp/components/esp32-smbus"]
 	path = esp/components/esp32-smbus
 	url = https://github.com/DavidAntliff/esp32-smbus.git
+[submodule "esp/components/CppSingletonTemplate"]
+	path = esp/components/CppSingletonTemplate
+	url = https://github.com/lombo-cmyk/CppSingletonTemplate.git

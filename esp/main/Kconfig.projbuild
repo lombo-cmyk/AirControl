@@ -18,9 +18,23 @@ menu "Project configuration"
         help
             Set the Maximum retry to avoid station reconnecting to the AP unlimited when the AP is unreachable.
 
-    config INCLUDE_STUBS
-        bool "Include stubs instead of actual devices"
-        default 0
-        help
-            Set the variable to True to stub peripheral devices
+    menu "Stubs"
+        config INCLUDE_STUBS
+            bool "Include stubs instead of actual devices"
+            default 0
+            help
+                Set the variable to True to stub peripheral devices
+
+        config STUB_LCD
+            bool "Stub LCD screen"
+            default 0
+            help
+                Set the variable to True to stub peripheral device
+
+        config STUB_TEMPERATURE
+            bool "Stub Temperature sensor"
+            default 0
+            help
+                Set the variable to True to stub peripheral device
+    endmenu
 endmenu

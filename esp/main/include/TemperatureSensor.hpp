@@ -10,12 +10,10 @@
 #include "owb.h"
 #include "owb_rmt.h"
 #include "Singleton.h"
+#include "RomHashMap.h"
 #include <array>
 #include <cstdint>
 #include <memory>
-#include <map>
-
-typedef uint8_t crc_key;
 
 class TemperatureSensor final : public Singleton<TemperatureSensor> {
 public:
@@ -27,7 +25,7 @@ private:
     static constexpr std::string_view temperatureTag_ = "Temp";
     static constexpr std::string_view outsideKey_ = "outside";
     static constexpr std::string_view insideKey_ = "inside";
-    std::map<crc_key, std::shared_ptr<DS18B20_Info>> devices_ = {};
+    RomHashMap<std::shared_ptr<DS18B20_Info>> devices_;
     owb_rmt_driver_info rmtDriverInfo_{};
 
     OneWireBus* oneWireInterface_;
@@ -35,14 +33,14 @@ private:
     void InitializeDevice(const OneWireBus_ROMCode& rom);
 
     void FindDevices();
-    void PerformTemperatureReadOut(std::map<crc_key, float>* readings) const;
-    DS18B20_ERROR ReadTemperature(std::map<crc_key, float>* readings) const;
+    void PerformTemperatureReadOut(RomHashMap<float>* readings) const;
+    DS18B20_ERROR ReadTemperature(RomHashMap<float>* readings) const;
 
-    void PublishTemperature(const std::map<crc_key, float>& readings) const;
+    void PublishTemperature(const RomHashMap<float>& readings) const;
     static std::string CreateStringFromRom(OneWireBus_ROMCode device);
 
     static void RunInfinity(void* pvParameters);
-    OneWireBus_ROMCode outsideSensor_ = {{.family = {0x28},
+    static constexpr OneWireBus_ROMCode outsideSensor_ = {{.family = {0x28},
                                           .serial_number =
                                               {
                                                   0x5d,
@@ -54,7 +52,7 @@ private:
                                               },
                                           .crc = {0xe1}}};
 
-    OneWireBus_ROMCode insideSensor_ = {{.family = {0x28},
+    static constexpr OneWireBus_ROMCode insideSensor_ = {{.family = {0x28},
                                          .serial_number =
                                              {
                                                  0xff,
@@ -65,9 +63,8 @@ private:
                                                  0x01,
                                              },
                                          .crc = {0x46}}};
-    std::map<crc_key, std::string_view> sensorMap_ = {
-        {outsideSensor_.fields.crc[0], outsideKey_},
-        {insideSensor_.fields.crc[0], insideKey_}};
+    RomHashMap<std::string_view> sensorMap_{{outsideSensor_, outsideKey_},
+                                            {insideSensor_, insideKey_}};
 };
 
 #endif // AIRCONTROLLER_TEMPERATURESENSOR_HPP

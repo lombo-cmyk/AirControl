@@ -5,10 +5,10 @@
 #include "TemperatureSensor.hpp"
 #include "Free.cpp"
 #include "Logger.hpp"
-#include <iostream>
 #include <memory>
 #include <string>
 #include <mutex>
+#include <unordered_map>
 
 void TemperatureSensor::Init() {
     vTaskDelay(2000 / portTICK_PERIOD_MS);
@@ -32,7 +32,7 @@ void TemperatureSensor::FindDevices() {
         std::string device = CreateStringFromRom(searchState.rom_code);
         LogInfo(temperatureTag_, knownDeviceCount, " : ", device);
 
-        if (sensorMap_.count(searchState.rom_code.fields.crc[0])) {
+        if (sensorMap_.count(searchState.rom_code)) {
             InitializeDevice(searchState.rom_code);
             knownDeviceCount++;
         }
@@ -61,7 +61,7 @@ void TemperatureSensor::InitializeDevice(const OneWireBus_ROMCode& rom) {
     ds18b20_use_crc(ds18b20_info.get(), true);
     ds18b20_set_resolution(ds18b20_info.get(), DS18B20_USED_RESOLUTION);
 
-    devices_[ds18b20_info->rom_code.fields.crc[0]] = ds18b20_info;
+    devices_[ds18b20_info->rom_code] = ds18b20_info;
 }
 
 void TemperatureSensor::Run() {
@@ -79,7 +79,7 @@ void TemperatureSensor::RunInfinity(void* pvParameters) {
     (void) pvParameters;
     TickType_t lastWakeTime;
     auto& d = TemperatureSensor::getInstance();
-    std::map<crc_key, float> readings{};
+    RomHashMap<float> readings{};
 
     for (;;) {
         lastWakeTime = xTaskGetTickCount();
@@ -96,38 +96,38 @@ std::string TemperatureSensor::CreateStringFromRom(OneWireBus_ROMCode device) {
 }
 
 DS18B20_ERROR
-TemperatureSensor::ReadTemperature(std::map<crc_key, float>* readings) const {
+TemperatureSensor::ReadTemperature(RomHashMap<float>* readings) const {
     DS18B20_ERROR error = DS18B20_OK;
-    for (auto const& [crc, device] : devices_) {
+    for (auto const& [rom, device] : devices_) {
         float reading;
         error = static_cast<DS18B20_ERROR>(
             error | ds18b20_read_temp(device.get(), &reading));
-        readings->insert_or_assign(crc, reading);
+        readings->insert_or_assign(rom, reading);
 
     }
     return error;
 }
 
 void TemperatureSensor::PublishTemperature(
-    const std::map<crc_key, float>& readings) const {
-    std::map<std::string_view, float> readingToPublish;
-    for (auto const& [crc, string_name] : sensorMap_) {
+    const RomHashMap<float>& readings) const {
+    std::unordered_map<std::string_view, float> readingToPublish;
+    for (auto const& [rom, string_name] : sensorMap_) {
         LogInfo(temperatureTag_,
                 "Temperature readings for ",
                 string_name,
                 ": ",
-                readings.find(crc)->second);
-        readingToPublish[string_name] = readings.find(crc)->second;
+                readings.find(rom)->second);
+        readingToPublish[string_name] = readings.find(rom)->second;
     }
     // notify observers here
 }
 void TemperatureSensor::PerformTemperatureReadOut(
-    std::map<crc_key, float>* readings) const {
+    RomHashMap<float>* readings) const {
     std::mutex myMutex;
     const std::lock_guard<std::mutex> lock(myMutex);
     ds18b20_convert_all(oneWireInterface_);
     ds18b20_wait_for_conversion(
-        devices_.find(outsideSensor_.fields.crc[0])->second.get());
+        devices_.find(outsideSensor_)->second.get());
     auto error = ReadTemperature(readings);
     if (error != DS18B20_OK) {
         throw std::runtime_error("Sensor error");

@@ -56,12 +56,12 @@ void TemperatureSensor::FindDevices() {
 }
 
 void TemperatureSensor::InitializeDevice(const OneWireBus_ROMCode& rom) {
-    auto ds18b20_info = std::make_shared<DS18B20_Info>();
+    auto ds18b20_info = std::make_unique<DS18B20_Info>();
     ds18b20_init(ds18b20_info.get(), oneWireInterface_, rom);
     ds18b20_use_crc(ds18b20_info.get(), true);
     ds18b20_set_resolution(ds18b20_info.get(), DS18B20_USED_RESOLUTION);
 
-    devices_[ds18b20_info->rom_code] = ds18b20_info;
+    devices_[ds18b20_info->rom_code] = std::move(ds18b20_info);
 }
 
 void TemperatureSensor::Run() {

@@ -25,7 +25,7 @@ private:
     static constexpr std::string_view temperatureTag_ = "Temp";
     static constexpr std::string_view outsideKey_ = "outside";
     static constexpr std::string_view insideKey_ = "inside";
-    RomHashMap<std::shared_ptr<DS18B20_Info>> devices_;
+    RomHashMap<std::unique_ptr<DS18B20_Info>> devices_;
     owb_rmt_driver_info rmtDriverInfo_{};
 
     OneWireBus* oneWireInterface_;

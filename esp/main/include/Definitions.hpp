@@ -22,5 +22,15 @@
 #define SAMPLE_PERIOD 10000 // milliseconds
 #define DEBOUNCE_TIME 70
 #define LCD_COLUMNS 16
-#define SECOND 1000
+#define SECOND 1000 / portTICK_PERIOD_MS
+#define MAX_DISPLAY_STATE 3
+#define MINIMUM_TEMP_THRESHOLD 1
+
+enum {
+    TimeScreen,
+    TempScreen,
+    EnergyScreen,
+    AirSourceScreen
+};
+
 #endif // AIRCONTROLLER_PINS_H

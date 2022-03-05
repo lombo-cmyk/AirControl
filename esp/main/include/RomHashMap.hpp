@@ -6,6 +6,8 @@
 #define AIRCONTROLLER_ROMHASHMAP_HPP
 #include <unordered_map>
 
+#include "owb.h"
+
 struct RomHash {
     std::size_t operator()(const OneWireBus_ROMCode& k) const {
         return std::hash<uint8_t>()(k.fields.crc[0]);
@@ -22,5 +24,7 @@ struct RomEqual {
 template<typename T>
 using RomHashMap = std::
     unordered_map<OneWireBus_ROMCode, T, RomHash, RomEqual>;
+
+using StringViewHashMap = std::unordered_map<std::string_view, float>;
 
 #endif // AIRCONTROLLER_ROMHASHMAP_HPP

@@ -2,12 +2,15 @@
 // Created by lukaszk on 09.07.2020.
 //
 
-#include "TemperatureSensor.hpp"
-#include "Logger.hpp"
 #include <memory>
-#include <string>
 #include <mutex>
+#include <string>
 #include <unordered_map>
+
+#include "Logger.hpp"
+#include "TemperatureSensor.hpp"
+
+std::vector<class Observer*> TemperatureSensor::observers_{};
 
 void TemperatureSensor::Init() {
     vTaskDelay(2000 / portTICK_PERIOD_MS);
@@ -95,40 +98,42 @@ std::string TemperatureSensor::CreateStringFromRom(OneWireBus_ROMCode device) {
 }
 
 DS18B20_ERROR
-TemperatureSensor::ReadTemperature(RomHashMap<float>* readings) const {
+TemperatureSensor::ReadTemperature(RomHashMap<float>* readings) {
     DS18B20_ERROR error = DS18B20_OK;
     for (auto const& [rom, device] : devices_) {
         float reading;
         error = static_cast<DS18B20_ERROR>(
             error | ds18b20_read_temp(device.get(), &reading));
         readings->insert_or_assign(rom, reading);
-
     }
     return error;
 }
 
-void TemperatureSensor::PublishTemperature(
-    const RomHashMap<float>& readings) const {
-    std::unordered_map<std::string_view, float> readingToPublish;
+void TemperatureSensor::PublishTemperature(const RomHashMap<float>& readings) {
     for (auto const& [rom, string_name] : sensorMap_) {
         LogInfo(temperatureTag_,
                 "Temperature readings for ",
                 string_name,
                 ": ",
                 readings.find(rom)->second);
-        readingToPublish[string_name] = readings.find(rom)->second;
+        readingToPublish_[string_name] = readings.find(rom)->second;
     }
-    // notify observers here
+    for (auto& o : observers_) {
+        o->update();
+    }
 }
+
 void TemperatureSensor::PerformTemperatureReadOut(
-    RomHashMap<float>* readings) const {
+    RomHashMap<float>* readings) {
     std::mutex myMutex;
     const std::lock_guard<std::mutex> lock(myMutex);
     ds18b20_convert_all(oneWireInterface_);
-    ds18b20_wait_for_conversion(
-        devices_.find(outsideSensor_)->second.get());
+    ds18b20_wait_for_conversion(devices_.find(outsideSensor_)->second.get());
     auto error = ReadTemperature(readings);
     if (error != DS18B20_OK) {
         throw std::runtime_error("Sensor error");
     }
+}
+void TemperatureSensor::AttachObserver(Observer* o) {
+    observers_.push_back(o);
 }

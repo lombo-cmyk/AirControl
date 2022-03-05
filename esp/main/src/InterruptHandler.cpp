@@ -16,6 +16,7 @@ TickType_t InterruptHandler::lastWakeTimeInsideAirManualButton_ = 0;
 std::vector<class Observer*> InterruptHandler::observers_{};
 
 void InterruptHandler::AddPumpEnergyUsage(void* arg) {
+    (void) arg;
     if ((xTaskGetTickCount() - lastWakeTimePump_) > DEBOUNCE_TIME) {
         ElectricMeterPump_++;
         lastWakeTimePump_ = xTaskGetTickCount();
@@ -24,10 +25,11 @@ void InterruptHandler::AddPumpEnergyUsage(void* arg) {
 }
 
 void InterruptHandler::DisplayNextState(void* arg) {
+    (void) arg;
     if ((xTaskGetTickCount() - lastWakeTimeForwardButton_) > DEBOUNCE_TIME) {
         displayState_++;
-        if (displayState_ > 3) {
-            displayState_ = 0;
+        if (displayState_ > MAX_DISPLAY_STATE) {
+            displayState_ = TimeScreen;
         }
         lastWakeTimeForwardButton_ = xTaskGetTickCount();
         NotifyObservers();
@@ -35,8 +37,9 @@ void InterruptHandler::DisplayNextState(void* arg) {
 }
 
 void InterruptHandler::OverrideAutomatic(void* arg) {
+    (void) arg;
     if ((xTaskGetTickCount() - lastWakeTimeOverrideButton_) > DEBOUNCE_TIME) {
-        if (displayState_ == 3) {
+        if (displayState_ == AirSourceScreen) {
             override_ = !override_;
         }
         lastWakeTimeOverrideButton_ = xTaskGetTickCount();
@@ -45,9 +48,10 @@ void InterruptHandler::OverrideAutomatic(void* arg) {
 }
 
 void InterruptHandler::SetAirManually(void* arg) {
+    (void) arg;
     if ((xTaskGetTickCount() - lastWakeTimeInsideAirManualButton_) >
         DEBOUNCE_TIME) {
-        if (displayState_ == 3 && override_) {
+        if (displayState_ == AirSourceScreen && override_) {
             useInsideAirManual_ = !useInsideAirManual_;
         }
         lastWakeTimeInsideAirManualButton_ = xTaskGetTickCount();
@@ -88,7 +92,7 @@ std::uint16_t InterruptHandler::GetDisplayState() {
     return displayState_;
 }
 void InterruptHandler::NotifyObservers() {
-    for (auto& el : observers_){
+    for (auto& el : observers_) {
         el->update();
     }
 }

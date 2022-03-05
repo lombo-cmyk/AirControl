@@ -4,14 +4,15 @@
 #include <cstring>
 #include <bitset>
 
-#include "esp_system.h"
-#include "esp_wifi.h"
 #include "esp_event.h"
+#include "esp_system.h"
 #include "esp_log.h"
-#include "Logger.hpp"
+#include "esp_wifi.h"
 #include "nvs_flash.h"
-#include "Wifi.hpp"
+
+#include "Logger.hpp"
 #include "Sntp.hpp"
+#include "Wifi.hpp"
 
 uint8_t Wifi::numberOfConnRetries_ = 0;
 EventGroupHandle_t Wifi::wifiEventGroup_{};
@@ -36,7 +37,7 @@ void Wifi::WifiEventCallback(void* arg,
             numberOfConnRetries_++;
             LogInfo(WifiTag_,
                     "Trying to connect to AP...",
-                    numberOfConnRetries_,
+                    (int) numberOfConnRetries_,
                     "/",
                     pMaxRetry_);
         } else {

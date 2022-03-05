@@ -3,7 +3,6 @@
 //
 
 #include "TemperatureSensor.hpp"
-#include "Free.cpp"
 #include "Logger.hpp"
 #include <memory>
 #include <string>

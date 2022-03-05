@@ -42,7 +42,7 @@ void app_main(void) {
         std::ostringstream stream;
         stream << std::put_time(std::localtime(&t), "%d-%m-%Y %H:%M:%S");
         LogInfo("main", "The current date/time is: ", stream.str());
-        vTaskDelay(2000.0 / portTICK_PERIOD_MS);
+        vTaskDelay(10000.0 / portTICK_PERIOD_MS);
     }
 }
 

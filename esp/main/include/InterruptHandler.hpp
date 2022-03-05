@@ -9,6 +9,8 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos//task.h"
 #include <cstdint>
+#include <vector>
+#include "ObserverBase.hpp"
 
 struct InterruptHandler {
 public:
@@ -27,6 +29,7 @@ public:
     static auto GetManualInfo() -> const bool& {
         return useInsideAirManual_;
     }
+    static void AttachObserver(Observer* o);
 
 private:
     static std::uint64_t ElectricMeterPump_;
@@ -39,10 +42,14 @@ private:
     static TickType_t lastWakeTimeOverrideButton_;
     static TickType_t lastWakeTimeInsideAirManualButton_;
 
+    static std::vector<class Observer*> observers_;
+
     static void AddPumpEnergyUsage(void* arg);
     static void DisplayNextState(void* arg);
     static void OverrideAutomatic(void* arg);
     static void SetAirManually(void* arg);
+
+    static void NotifyObservers();
 };
 
 #endif // AIRCONTROLLER_INTERRUPTHANDLER_HPP

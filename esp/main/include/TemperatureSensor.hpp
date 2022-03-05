@@ -10,7 +10,7 @@
 #include "owb.h"
 #include "owb_rmt.h"
 #include "Singleton.h"
-#include "RomHashMap.h"
+#include "RomHashMap.hpp"
 #include <array>
 #include <cstdint>
 #include <memory>

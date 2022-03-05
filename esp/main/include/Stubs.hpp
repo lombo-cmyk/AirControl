@@ -6,12 +6,27 @@
 #define AIRCONTROLLER_STUBS_H
 
 #include "Definitions.hpp"
+#include "ObserverBase.hpp"
+#include "InterruptHandler.hpp"
+#include "Logger.hpp"
 
 #ifdef CONFIG_STUB_LCD
-class LCD {
+class LCD: public Observer {
 public:
+    LCD(){
+    InterruptHandler::AttachObserver(this);
+    }
     static void AdjustLine(std::string& line){};
-    void DisplayScreen(std::array<float, MAX_DEVICES>& temp){};
+    void DisplayScreen(std::array<float, MAX_DEVICES>& temp){
+        LogInfo("Stub LCD: ", "subbed value: ", subscribedValue);
+    };
+    void update() override{
+        subscribedValue = InterruptHandler::GetDisplayState();
+    };
+
+private:
+    std::uint16_t subscribedValue = 0;
+
 };
 #else
 #include "LCD.hpp"

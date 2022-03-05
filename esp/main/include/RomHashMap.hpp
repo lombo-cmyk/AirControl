@@ -2,8 +2,8 @@
 // Created by Lukasz on 05.03.2022.
 //
 
-#ifndef AIRCONTROLLER_ROMHASHMAP_H
-#define AIRCONTROLLER_ROMHASHMAP_H
+#ifndef AIRCONTROLLER_ROMHASHMAP_HPP
+#define AIRCONTROLLER_ROMHASHMAP_HPP
 #include <unordered_map>
 
 struct RomHash {
@@ -23,4 +23,4 @@ template<typename T>
 using RomHashMap = std::
     unordered_map<OneWireBus_ROMCode, T, RomHash, RomEqual>;
 
-#endif // AIRCONTROLLER_ROMHASHMAP_H
+#endif // AIRCONTROLLER_ROMHASHMAP_HPP

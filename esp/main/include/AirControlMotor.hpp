@@ -12,16 +12,16 @@
 
 class AirControlMotor {
 public:
-    void SetMotor(const std::array<float, MAX_DEVICES> temp,
-                  const bool isOverride,
-                  const bool isInsideAir);
+    void SetMotor(std::array<float, MAX_DEVICES> temp,
+                  bool isOverride,
+                  bool isInsideAir);
 
 private:
-    double outsideTemperature_ = 0;
-    double insideTemperature_ = 1;
+    float outsideTemperature_ = 0;
+    float insideTemperature_ = 1;
     bool insideAirSource_ = true;
     TickType_t lastSourceChange_ = 0;
-    void SetAirSource(const bool isOverride, const bool isInsideAir);
+    void SetAirSource(bool isOverride, bool isInsideAir);
     void SetPin();
 };
 

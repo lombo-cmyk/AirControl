@@ -17,7 +17,6 @@
 #define LCD_BACKLIGHT_PIN GPIO_NUM_18
 
 #define ESP_INTR_FLAG_DEFAULT 0
-#define MAX_DEVICES 2
 #define DS18B20_USED_RESOLUTION (DS18B20_RESOLUTION_12_BIT)
 #define SAMPLE_PERIOD 10000 // milliseconds
 #define DEBOUNCE_TIME 70
@@ -25,12 +24,9 @@
 #define SECOND 1000 / portTICK_PERIOD_MS
 #define MAX_DISPLAY_STATE 3
 #define MINIMUM_TEMP_THRESHOLD 1
+#define LCD_ADDRESS 0x27
+#define LCD_COLUMNS 16
 
-enum {
-    TimeScreen,
-    TempScreen,
-    EnergyScreen,
-    AirSourceScreen
-};
+enum { TimeScreen, TempScreen, EnergyScreen, AirSourceScreen };
 
 #endif // AIRCONTROLLER_PINS_H

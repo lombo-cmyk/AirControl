@@ -5,6 +5,7 @@
 #include "esp_log.h"
 
 #include "AirControlMotor.hpp"
+#include "I2CWrapper.hpp"
 #include "InterruptHandler.hpp"
 #include "Logger.hpp"
 #include "Wifi.hpp"
@@ -24,15 +25,25 @@ void app_main(void) {
     LogInfo("main", "Esp starting");
     auto& temp = TemperatureSensor::getInstance();
     temp.Init();
+    temp.Run();
+
     InterruptHandler::Start();
-    LCD LCDisplay = LCD();
+
+    auto& d = I2CWrapper::getInstance();
+    d.Init(LCD_SDA_PIN, LCD_SCL_PIN);
+
+    auto lcd = LCD();
+    lcd.Init(LCD_COLUMNS, LCD_ADDRESS);
+    lcd.DisplayWelcomeMessage();
+
     Wifi::StartWifi();
-    std::array<float, MAX_DEVICES> temperature = {1.1, 2.2};
+
     AirControlMotor Motor;
     Motor.Init();
-    temp.Run();
+
     for (;;) {
-        LCDisplay.DisplayScreen(temperature);
+        lcd.DisplayCurrentState();
+
         LogInfo("main", "kWh Pump: ", InterruptHandler::GetPumpEnergyUsage());
         LogInfo("main", "LCD State: ", InterruptHandler::GetDisplayState());
 
